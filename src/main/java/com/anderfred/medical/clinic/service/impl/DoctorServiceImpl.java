@@ -8,7 +8,8 @@ import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.service.DoctorService;
-import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,11 @@ public class DoctorServiceImpl implements DoctorService {
   private final Logger log = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
   private final DoctorJpaRepository repository;
+  private final PasswordEncoder passwordEncoder;
 
-  public DoctorServiceImpl(DoctorJpaRepository repository) {
+  public DoctorServiceImpl(DoctorJpaRepository repository, PasswordEncoder passwordEncoder) {
     this.repository = repository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
@@ -35,6 +38,7 @@ public class DoctorServiceImpl implements DoctorService {
               log.error("Email:[{}] already exists", email);
               throw new BaseException("Email already exists", ClinicExceptionCode.INVALID_EMAIL);
             });
+    doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
     Doctor persisted = repository.save(doctor);
     log.debug("Doctor:[{}], registered", persisted);
     return persisted;

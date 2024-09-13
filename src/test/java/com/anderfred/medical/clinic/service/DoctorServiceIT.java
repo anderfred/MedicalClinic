@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.anderfred.medical.clinic.base.BaseIT;
-import com.anderfred.medical.clinic.base.security.WithMockCustomUser;
 import com.anderfred.medical.clinic.domain.Doctor;
 import com.anderfred.medical.clinic.domain.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
@@ -16,13 +15,17 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 public class DoctorServiceIT extends BaseIT {
   @Autowired private DoctorJpaRepository repository;
   @Autowired private DoctorService doctorService;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   public static final String INITIAL_USER_EMAIL = "admin@test.com";
   public static final String INITIAL_USER_NAME = "admin";
+  public static final String INITIAL_USER_PASSWORD = "12345";
 
   @Test
   public void shouldVerifySystemDoctorUser() {
@@ -38,14 +41,13 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(doctor.getLastLoginDate()).isNull();
     assertThat(doctor.getLastModifiedDate()).isNotNull();
     assertThat(doctor.getPassword()).isNotNull();
+    assertThat(passwordEncoder.matches(INITIAL_USER_PASSWORD, doctor.getPassword())).isTrue();
     assertThat(doctor.getLastModifiedBy()).isNotNull();
     assertThat(doctor.getLastModifiedDate()).isNotNull();
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldCreateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = repository.save(doctor);
@@ -75,9 +77,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldNotCreateDoctorIfEmailAlreadyExists() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = repository.save(doctor);
@@ -88,9 +88,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldRegisterDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -108,9 +106,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldUpdateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -143,9 +139,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldNotUpdateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -178,9 +172,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldDeleteDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -202,9 +194,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"DOCTOR"})
+  @WithMockUser(username = "user")
   public void shouldNotDeleteDoctorAlreadyDeleted() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -228,7 +218,7 @@ public class DoctorServiceIT extends BaseIT {
         ClinicExceptionCode.INVALID_REQUEST, () -> doctorService.deleteDoctor(savedDoctor.getId()));
   }
 
-  private Doctor generateDoctor() {
+  public static Doctor generateDoctor() {
     Doctor doctor = new Doctor();
     doctor.setEmail(String.format("%s@test.com", randomAlphabetic(10)));
     doctor.setFirstName(randomAlphabetic(10));

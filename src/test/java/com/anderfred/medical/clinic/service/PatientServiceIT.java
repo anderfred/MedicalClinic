@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.anderfred.medical.clinic.base.BaseIT;
-import com.anderfred.medical.clinic.base.security.WithMockCustomUser;
 import com.anderfred.medical.clinic.domain.Patient;
 import com.anderfred.medical.clinic.domain.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
@@ -15,15 +14,14 @@ import com.anderfred.medical.clinic.util.AssertJUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.test.context.support.WithMockUser;
 
 public class PatientServiceIT extends BaseIT {
   @Autowired private PatientJpaRepository repository;
   @Autowired private PatientService service;
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldCreatePatient() {
     Patient patient = generatePatient();
     Patient savedPatient = repository.save(patient);
@@ -53,9 +51,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldNotCreatePatientIfEmailAlreadyExists() {
     Patient patient = generatePatient();
     Patient savedPatient = repository.save(patient);
@@ -67,9 +63,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldRegisterPatient() {
     Patient patient = generatePatient();
     Patient savedPatient = service.registerPatient(patient);
@@ -87,9 +81,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldUpdatePatient() {
     Patient patient = generatePatient();
     Patient savedPatient = service.registerPatient(patient);
@@ -122,9 +114,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldNotUpdatePatient() {
     Patient patient = generatePatient();
     Patient savedPatient = service.registerPatient(patient);
@@ -157,9 +147,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldDeletePatient() {
     Patient patient = generatePatient();
     Patient savedPatient = service.registerPatient(patient);
@@ -181,9 +169,7 @@ public class PatientServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockCustomUser(
-      username = "doc",
-      roles = {"PATIENT"})
+  @WithMockUser(username = "user")
   public void shouldNotDeletePatientAlreadyDeleted() {
     Patient patient = generatePatient();
     Patient savedPatient = service.registerPatient(patient);
@@ -207,7 +193,7 @@ public class PatientServiceIT extends BaseIT {
         ClinicExceptionCode.INVALID_REQUEST, () -> service.deletePatient(savedPatient.getId()));
   }
 
-  private Patient generatePatient() {
+  public static Patient generatePatient() {
     Patient patient = new Patient();
     patient.setEmail(String.format("%s@test.com", randomAlphabetic(10)));
     patient.setFirstName(randomAlphabetic(10));

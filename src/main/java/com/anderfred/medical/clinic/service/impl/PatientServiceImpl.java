@@ -8,19 +8,22 @@ import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.service.PatientService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PatientServiceImpl implements PatientService {
   private final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
 
   private final PatientJpaRepository repository;
+  private final PasswordEncoder passwordEncoder;
 
-  public PatientServiceImpl(PatientJpaRepository repository) {
+  public PatientServiceImpl(PatientJpaRepository repository, PasswordEncoder passwordEncoder) {
     this.repository = repository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   // TODO Add check on only doctor is able to use apis
@@ -37,6 +40,7 @@ public class PatientServiceImpl implements PatientService {
               log.error("Email:[{}] already exists", email);
               throw new BaseException("Email already exists", ClinicExceptionCode.INVALID_EMAIL);
             });
+    patient.setPassword(passwordEncoder.encode(patient.getPassword()));
     Patient persisted = repository.save(patient);
     log.debug("Patient:[{}], registered", persisted);
     return persisted;

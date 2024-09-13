@@ -1,3 +1,10 @@
 package com.anderfred.medical.clinic.service;
 
-public interface AuthService {}
+import com.anderfred.medical.clinic.domain.User;
+import com.anderfred.medical.clinic.domain.auth.AuthRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+public interface AuthService {
+  User authenticateDoctor(AuthRequest authRequest, HttpServletResponse response);
+  User authenticatePatient(AuthRequest authRequest, HttpServletResponse response);
+}

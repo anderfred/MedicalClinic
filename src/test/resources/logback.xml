@@ -5,7 +5,7 @@
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder name="enc" class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{user}] [%X{cid}] [%X{scid}] [%16thread] %logger{10} - %.-10000msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{mdc_user}] [%X{mdc_cid}] [%X{mdc_scid}] [%16thread] %logger{10} - %.-10000msg%n</pattern>
             </layout>
         </encoder>
     </appender>
@@ -41,6 +41,7 @@
     <logger name="springfox.documentation.schema.property" level="ERROR"/>
     <logger name="sun.net.www" level="INFO"/>
     <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="org.springframework.security" level="DEBUG"/>
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
