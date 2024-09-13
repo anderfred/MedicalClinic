@@ -1,15 +1,10 @@
 package com.anderfred.medical.clinic;
 
+import com.anderfred.medical.clinic.base.BaseIT;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@Import(TestcontainersConfiguration.class)
-@SpringBootTest
-class ClinicApplicationTests {
+class ClinicApplicationTests extends BaseIT {
 
   @Test
-  void contextLoads() {
-  }
-
+  void contextLoads() {}
 }

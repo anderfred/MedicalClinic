@@ -1,0 +1,75 @@
+logging:
+  level:
+    ROOT: INFO
+
+spring:
+  application:
+    name: clinic
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      auto-commit: false
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-durations-as-timestamps: false
+      fail_on_empty_beans: false
+      fail_on_unwrapped_type_identifiers: false
+  jpa:
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.hbm2ddl.auto: none
+      hibernate.jdbc.time_zone: UTC
+      hibernate.jdbc.batch_size: 200
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      org.hibernate.flushMode: COMMIT
+      hibernate.check_nullability: true
+  liquibase:
+    contexts: test
+    change-log: classpath:config/liquibase/master.xml
+  main:
+    allow-bean-definition-overriding: true
+  task:
+    execution:
+      thread-name-prefix: clinic-task-
+      pool:
+        core-size: 1
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: clinic-scheduling-
+      pool:
+        size: 1
+
+server:
+  error:
+    include-stacktrace: never
+  port: 10344
+  address: localhost
+
+org:
+  quartz:
+    scheduler:
+      enabled: false
+
+application:
+  logging:
+    request:
+      payload:
+        print: true
+    response:
+      payload:
+        print: true

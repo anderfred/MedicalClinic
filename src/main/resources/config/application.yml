@@ -1,0 +1,102 @@
+logging:
+  level:
+    ROOT: INFO
+
+spring:
+  application:
+    name: clinic
+  jmx:
+    enabled: false
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  liquibase:
+    change-log: classpath:config/liquibase/master.xml
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-durations-as-timestamps: false
+      fail_on_empty_beans: false
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: true
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.jdbc.batch_size: 25
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+      hibernate.query.in_clause_parameter_padding: true
+      hibernate.check_nullability: true
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+  messages:
+    basename: i18n/messages
+  main:
+    allow-bean-definition-overriding: true
+  task:
+    execution:
+      thread-name-prefix: clinic-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: clinic-scheduling-
+      pool:
+        size: 2
+  output:
+    ansi:
+      console-available: true
+  quartz:
+    job-store-type: jdbc
+    overwrite-existing-jobs: true
+    scheduler-name: clinic-scheduling
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org.quartz.scheduler.instanceName: clinic-scheduling
+      org.quartz.scheduler.instanceId: AUTO
+      org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
+      org.quartz.threadPool.threadCount: 5
+      org.quartz.threadPool.threadPriority: 5
+      org.quartz.jobStore.misfireThreshold: 60000
+      org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.MySQLDelegate
+      org.quartz.jobStore.useProperties: true
+      org.quartz.jobStore.tablePrefix: qrtz_
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 20000
+    jdbc:
+      initialize-schema: never
+
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+
+org:
+  quartz:
+    configPath: /config/quartz.properties
+    scheduler:
+      enabled: true
+      close-appointment: 0/1 * * ? * * *
+
+application:
+  logging:
+    request:
+      payload:
+        print: true
+    response:
+      payload:
+        print: true
