@@ -1,0 +1,30 @@
+services:
+  app:
+    image: clinic:0.0.1
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/testdb
+      - SPRING_DATASOURCE_USERNAME=test
+      - SPRING_DATASOURCE_PASSWORD=test
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - JAVA_OPTS= -Xms256m -Xmx512m -XX:MaxMetaspaceSize=192m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+        reservations:
+          memory: 256m
+    networks:
+      - default
+    ports:
+      - 8761:8761
+#    restart: always
+  db:
+    image: mysql:8.0.33
+    networks:
+      - "default"
+    environment:
+      - MYSQL_PASSWORD=test
+      - MYSQL_DATABASE=testdb
+      - MYSQL_USER=test
+      - MYSQL_ROOT_PASSWORD=test
+    restart: always

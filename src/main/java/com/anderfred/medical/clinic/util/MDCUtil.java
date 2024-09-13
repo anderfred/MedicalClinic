@@ -6,6 +6,8 @@ import static java.util.Objects.isNull;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
+
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -59,6 +61,15 @@ public class MDCUtil {
 
   public static void init(Authentication authResult) {
     MDC.put(MDC_USER, authResult.getPrincipal().toString());
-    initCID();
+    if (!initialized()) {
+      initCID();
+    }
+  }
+
+
+  public static boolean initialized() {
+    return !StringUtils.isBlank(MDC.get(MDC_USER))
+        && !StringUtils.isBlank(MDC.get(MDC_CID))
+        && !StringUtils.isBlank(MDC.get(MDC_SCID));
   }
 }
