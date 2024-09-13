@@ -4,6 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
 
-    <include file="config/liquibase/changelog/test.xml"
+    <include file="config/liquibase/changelog/202409131126_add_users_tables.xml"
              relativeToChangelogFile="false"/>
 </databaseChangeLog>

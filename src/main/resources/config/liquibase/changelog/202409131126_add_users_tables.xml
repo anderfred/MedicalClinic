@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="add_user_table" author="belkov">
+        <createTable tableName="user">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--audit-->
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <!--audit end-->
+
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login_date" type="timestamp"/>
+            <column name="state" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="object_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="initialize_doctor_user" author="belkov">
+        <!--Initial user-->
+        <sql>
+            INSERT INTO user(created_date, last_modified_date, created_by, last_modified_by, first_name,
+                             last_name, email, last_login_date, password, object_type, state)
+            VALUES ('2024-09-13 12:42:11.628978', '2024-09-13 12:42:11.628978', 'system', 'system', 'admin',
+                    'admin', 'admin@test.com', null, '12345', 'doctor', 'ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="user_email_type_constraint" author="belkov">
+        <addUniqueConstraint tableName="user" columnNames="object_type, email"/>
+    </changeSet>
+</databaseChangeLog>
