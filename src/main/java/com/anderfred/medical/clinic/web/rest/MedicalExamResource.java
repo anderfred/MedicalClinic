@@ -2,9 +2,15 @@ package com.anderfred.medical.clinic.web.rest;
 
 import com.anderfred.medical.clinic.domain.MedicalExam;
 import com.anderfred.medical.clinic.service.MedicalExamService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +33,13 @@ public class MedicalExamResource {
 
   @GetMapping("/exams-list-pdf")
   @Secured("PATIENT_ROLE")
-  public ResponseEntity<Void> generatePDF(@RequestParam("patientId") Long patientId) {
+  public ResponseEntity<byte[]> generatePDF(@RequestParam("patientId") Long patientId) {
     log.debug("REST request to generate PDF for patient id:[{}]", patientId);
-    return ResponseEntity.ok().build();
+    byte[] pdfBytes = medicalExamService.generateExamsPDF(patientId);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDispositionFormData("filename", "medical-exams.pdf");
+    return ResponseEntity.ok().headers(headers).body(pdfBytes);
   }
 
   @GetMapping("/exams-list")

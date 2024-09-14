@@ -20,6 +20,7 @@
         <quartz-version>3.1.2</quartz-version>
         <jwt-version>0.11.5</jwt-version>
         <apache-codec-version>1.17.0</apache-codec-version>
+        <jasper-version>6.21.3</jasper-version>
     </properties>
     <dependencies>
         <dependency>
@@ -50,7 +51,6 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        <!-- JWT Support -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -65,6 +65,11 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>${jwt-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasper-version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>

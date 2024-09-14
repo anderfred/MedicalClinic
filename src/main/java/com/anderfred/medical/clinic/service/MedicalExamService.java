@@ -10,4 +10,5 @@ public interface MedicalExamService {
   MedicalExam findById(Long id);
   MedicalExam update(MedicalExam medicalExam);
   void delete(Long id);
+  byte[] generateExamsPDF(Long patientId);
 }

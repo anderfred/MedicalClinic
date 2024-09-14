@@ -18,6 +18,8 @@ import com.anderfred.medical.clinic.service.test.UserServiceHelper;
 import com.anderfred.medical.clinic.util.AssertJUtil;
 import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -298,6 +300,35 @@ public class AppointmentServiceIT extends BaseIT {
     appointmentService.closeAppointments();
     Appointment updated = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
     assertThat(updated.getState()).isEqualTo(AppointmentState.CLOSED);
+  }
+
+  @Test
+  @WithCustomMockUser
+  public void shouldGenerateExamsPDF() {
+    Doctor doctor = userServiceHelper.createPersistedDoctor();
+    Patient patient = userServiceHelper.createPersistedPatient();
+
+    mockSecurityContext(doctor.getId(), doctor.getEmail(), UserRole.DOCTOR);
+    LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    Appointment appointment = new Appointment().setResultReadyDate(date);
+    ExamType examType = generateExamType();
+    LocalDateTime examDate = LocalDateTime.of(2024, 10, 12, 15, 12);
+    MedicalExam exam1 =
+            new MedicalExam()
+                    .setDate(examDate)
+                    .setExamType(examType)
+                    .setAppointment(appointment)
+                    .setResult(MedicalExamResult.POSITIVE);
+    appointment.setMedicalExams(List.of(exam1));
+    Appointment saved = appointmentService.addAppointment(appointment, patient.getId());
+    Appointment persisted = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
+    assertThat(persisted.getDoctor().getId()).isEqualTo(doctor.getId());
+    assertThat(persisted.getPatient().getId()).isEqualTo(patient.getId());
+    assertThat(persisted.getResultReadyDate()).isEqualTo(date);
+    assertThat(persisted.getState()).isEqualTo(AppointmentState.NEW);
+
+    byte[] bytes = medicalExamService.generateExamsPDF(patient.getId());
+    assertThat(bytes).isNotNull();
   }
 
   private ExamType generateExamType() {
