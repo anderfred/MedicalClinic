@@ -5,8 +5,7 @@ import static com.anderfred.medical.clinic.service.DoctorServiceIT.INITIAL_USER_
 import static com.anderfred.medical.clinic.util.IdUtils.randomLong;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.anderfred.medical.clinic.base.BaseIT;
@@ -223,5 +222,136 @@ public class AuthServiceIT extends BaseIT {
     // 24 hours = 24 * 60 * 60 * 1000 milliseconds
     long twentyFourHoursInMillis = TimeUnit.HOURS.toMillis(24);
     assertThat(diffInMillis == twentyFourHoursInMillis).isTrue();
+  }
+
+  @Test
+  @WithCustomMockUser(username = "user")
+  public void doctorShouldNotHaveAccessToPatientEndpoints() throws Exception {
+    Doctor doctor = DoctorServiceIT.generateDoctor();
+    final String password = doctor.getPassword();
+    Doctor persisted = doctorService.registerDoctor(doctor);
+    SecurityContextHolder.clearContext();
+
+    AuthRequest authRequest = AuthRequest.of(doctor.getEmail(), password);
+    MvcResult result =
+        mockMvc
+            .perform(
+                post("/api/auth/doctor-login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isOk())
+            .andReturn();
+    MockHttpServletResponse response = result.getResponse();
+
+    String token = response.getCookie(TOKEN_KEY).getValue();
+
+    mockMvc
+        .perform(
+            get("/api/medical-exam/exams-list?patientId=" + randomLong())
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(authRequest)))
+        .andExpect(status().isForbidden())
+        .andReturn();
+
+    mockMvc
+        .perform(
+                get("/api/medical-exam/exams-list-pdf?patientId=" + randomLong())
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(authRequest)))
+        .andExpect(status().isForbidden())
+        .andReturn();
+  }
+
+  @Test
+  @WithCustomMockUser(username = "user")
+  public void patientShouldNotHaveAccessToDoctorEndpoints() throws Exception {
+    Patient patient = PatientServiceIT.generatePatient();
+    final String password = patient.getPassword();
+    Patient persisted = patientService.registerPatient(patient);
+    SecurityContextHolder.clearContext();
+
+    AuthRequest authRequest = AuthRequest.of(patient.getEmail(), password);
+    MvcResult result =
+            mockMvc
+                    .perform(
+                            post("/api/auth/patient-login")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(authRequest)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+    MockHttpServletResponse response = result.getResponse();
+
+    String token = response.getCookie(TOKEN_KEY).getValue();
+
+    //Allowed
+    mockMvc
+            .perform(
+                    get("/api/medical-exam/exams-list?patientId=" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    mockMvc
+            .perform(
+                    get("/api/medical-exam/exams-list-pdf?patientId=" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    //Forbidden
+    mockMvc
+            .perform(
+                    get("/api/patient/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
+    mockMvc
+            .perform(
+                    delete("/api/patient/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
+    mockMvc
+            .perform(
+                    get("/api/doctor/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
+    mockMvc
+            .perform(
+                    delete("/api/doctor/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
+    mockMvc
+            .perform(
+                    delete("/api/appointment/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
+    mockMvc
+            .perform(
+                    get("/api/appointment/" + randomLong())
+                            .header("Authorization", "Bearer " + token)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authRequest)))
+            .andExpect(status().isForbidden())
+            .andReturn();
   }
 }

@@ -5,10 +5,10 @@ import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.security.CustomAuthenticationProvider;
 import com.anderfred.medical.clinic.security.JwtAuthenticationFilter;
 import com.anderfred.medical.clinic.security.JwtTokenService;
-import com.anderfred.medical.clinic.security.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
   private final DoctorJpaRepository doctorJpaRepository;
   private final PatientJpaRepository patientJpaRepository;

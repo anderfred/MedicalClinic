@@ -25,11 +25,14 @@ public class MedicalExamResource {
 
   // TODO pdf generation by jasper soft
 
-/*  @GetMapping
+  @GetMapping("/exams-list-pdf")
   @Secured("PATIENT_ROLE")
-  public ResponseEntity<Void> generatePDF() {}*/
+  public ResponseEntity<Void> generatePDF(@RequestParam("patientId") Long patientId) {
+    log.debug("REST request to generate PDF for patient id:[{}]", patientId);
+    return ResponseEntity.ok().build();
+  }
 
-  @GetMapping
+  @GetMapping("/exams-list")
   @Secured("PATIENT_ROLE")
   public ResponseEntity<List<MedicalExam>> findMedicalExams(
       @RequestParam("patientId") Long patientId) {

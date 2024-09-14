@@ -58,4 +58,13 @@ public class AppointmentResource {
     log.debug("Active Appointments [{}]", activeAppointments);
     return ResponseEntity.ok(activeAppointments);
   }
+
+  @DeleteMapping("/{id}")
+  @Secured("DOCTOR_ROLE")
+  public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
+    log.debug("REST request to delete Appointment :[{}]", id);
+    appointmentService.delete(id);
+    log.debug("Appointment deleted");
+    return ResponseEntity.ok().build();
+  }
 }
