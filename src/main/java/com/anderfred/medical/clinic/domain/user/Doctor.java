@@ -10,6 +10,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class Doctor extends User {
   public static final String TYPE_DISCRIMINATOR = "doctor";
 
+  public static final Long INITIAL_DOCTOR_ID = 1L;
+
   @Override
   public String toString() {
     return new ToStringBuilder(this).append("user", super.toString()).toString();

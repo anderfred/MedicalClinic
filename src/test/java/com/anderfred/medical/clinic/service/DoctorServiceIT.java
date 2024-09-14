@@ -1,5 +1,6 @@
 package com.anderfred.medical.clinic.service;
 
+import static com.anderfred.medical.clinic.domain.user.Doctor.INITIAL_DOCTOR_ID;
 import static com.anderfred.medical.clinic.util.IdUtils.randomLong;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,10 +12,14 @@ import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.util.AssertJUtil;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -74,6 +79,12 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor2.getCreatedDate()).isNotNull();
     assertThat(savedDoctor2.getCreatedBy()).isNotNull();
     assertThat(savedDoctor2.getLastLoginDate()).isNotNull();
+
+    Doctor found = doctorService.findById(savedDoctor2.getId());
+    assertThat(found.getId()).isEqualTo(doctor2.getId());
+
+    AssertJUtil.assertBaseException(
+        ClinicExceptionCode.ENTITY_NOT_FOUND, () -> doctorService.findById(randomLong()));
   }
 
   @Test
@@ -212,11 +223,57 @@ public class DoctorServiceIT extends BaseIT {
         ClinicExceptionCode.INVALID_REQUEST, () -> doctorService.deleteDoctor(savedDoctor.getId()));
   }
 
+  @Test
+  @WithMockUser(username = "user")
+  public void shouldFindPageOfDoctors() {
+    // Clear all in db except initial doctor
+    repository.findAll().stream()
+        .filter(d -> !d.getId().equals(INITIAL_DOCTOR_ID))
+        .forEach(dr -> repository.delete(dr));
+
+    Doctor first = generateDoctor("aa", "aaaaaaa");
+    Doctor second = generateDoctor("aa", "aaaaaaab");
+    Doctor third = generateDoctor("ab", "aaaaaaab");
+
+    Long firstId = doctorService.registerDoctor(first).getId();
+    Long secondId = doctorService.registerDoctor(second).getId();
+    Long thirdId = doctorService.registerDoctor(third).getId();
+
+    final long toCreateCount = 50L;
+    final int pageSize = 20;
+
+    // Total created + created for check sorting (3) + initial admin 1
+    final long totalCount = toCreateCount + 3L + 1L;
+
+    for (int i = 1; i <= toCreateCount; i++) {
+      doctorService.registerDoctor(generateDoctor());
+    }
+
+    PageRequest pageRequest = PageRequest.of(0, pageSize);
+    Page<Doctor> page1 = doctorService.findPage(pageRequest);
+
+    assertThat(page1.getTotalElements()).isEqualTo(totalCount);
+    List<Doctor> content1 = page1.getContent();
+    Iterator<Doctor> iterator = content1.iterator();
+    assertThat(iterator.next().getId()).isEqualTo(firstId);
+    assertThat(iterator.next().getId()).isEqualTo(secondId);
+    assertThat(iterator.next().getId()).isEqualTo(thirdId);
+    assertThat(content1.size()).isEqualTo(pageSize);
+
+    PageRequest pageRequest2 = PageRequest.of(2, pageSize);
+    Page<Doctor> page2 = doctorService.findPage(pageRequest2);
+    assertThat(page2.getContent().size()).isEqualTo(totalCount - (pageSize) * 2);
+  }
+
   public static Doctor generateDoctor() {
+    return generateDoctor(randomAlphabetic(10), randomAlphabetic(10));
+  }
+
+  public static Doctor generateDoctor(String name, String lastName) {
     Doctor doctor = new Doctor();
     doctor.setEmail(String.format("%s@test.com", randomAlphabetic(10)));
-    doctor.setFirstName(randomAlphabetic(10));
-    doctor.setLastName(randomAlphabetic(10));
+    doctor.setFirstName(name);
+    doctor.setLastName(lastName);
     doctor.setPassword(randomAlphabetic(10));
     return doctor;
   }

@@ -5,6 +5,8 @@ import com.anderfred.medical.clinic.service.PatientService;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,15 @@ public class PatientResource {
     return ResponseEntity.ok(created);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<Patient> getById(@PathVariable Long id) {
+    StopWatch stopWatch = StopWatch.createStarted();
+    log.debug("START | Request to get patient by id:[{}]", id);
+    Patient created = patientService.findById(id);
+    log.debug("STOP | Get patient by id time:[{}]ms", stopWatch.getTime());
+    return ResponseEntity.ok(created);
+  }
+
   @PutMapping("/")
   public ResponseEntity<Patient> updatePatient(@RequestBody Patient patient) {
     StopWatch stopWatch = StopWatch.createStarted();
@@ -37,12 +48,25 @@ public class PatientResource {
     return ResponseEntity.ok(updated);
   }
 
-  // TODO
+  // TODO delete totally if not constraints
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> updatePatient(@PathVariable(name = "id") Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to delete patient by:[{}]", id);
+    patientService.deletePatient(id);
     log.debug("STOP | Delete request time:[{}]ms", stopWatch.getTime());
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/page")
+  public ResponseEntity<Page<Patient>> findPage(Pageable pageable) {
+    StopWatch stopWatch = StopWatch.createStarted();
+    log.debug("START | Request to get page:[{}] of Patients", pageable);
+    Page<Patient> patients = patientService.findPage(pageable);
+    log.debug(
+        "STOP | Request to get patients page:[{}], time:[{}]ms",
+        patients.getTotalElements(),
+        stopWatch.getTime());
+    return ResponseEntity.ok(patients);
   }
 }

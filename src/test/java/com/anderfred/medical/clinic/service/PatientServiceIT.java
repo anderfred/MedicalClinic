@@ -11,9 +11,13 @@ import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.util.AssertJUtil;
+import java.util.Iterator;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 
 public class PatientServiceIT extends BaseIT {
@@ -46,6 +50,12 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient2.getCreatedDate()).isNotNull();
     assertThat(savedPatient2.getCreatedBy()).isNotNull();
     assertThat(savedPatient2.getLastLoginDate()).isNotNull();
+
+    Patient found = service.findById(savedPatient2.getId());
+    assertThat(found.getId()).isEqualTo(savedPatient2.getId());
+
+    AssertJUtil.assertBaseException(
+        ClinicExceptionCode.ENTITY_NOT_FOUND, () -> service.findById(randomLong()));
   }
 
   @Test
@@ -186,11 +196,54 @@ public class PatientServiceIT extends BaseIT {
         ClinicExceptionCode.INVALID_REQUEST, () -> service.deletePatient(savedPatient.getId()));
   }
 
+  @Test
+  @WithMockUser(username = "user")
+  public void shouldFindPageOfPatients() {
+    repository.deleteAll();
+
+    Patient first = generatePatient("aa", "aaaaaaa");
+    Patient second = generatePatient("aa", "aaaaaaab");
+    Patient third = generatePatient("ab", "aaaaaaab");
+
+    Long firstId = service.registerPatient(first).getId();
+    Long secondId = service.registerPatient(second).getId();
+    Long thirdId = service.registerPatient(third).getId();
+
+    final long toCreateCount = 50L;
+    final int pageSize = 20;
+
+    // Total created + created for check sorting (3)
+    final long totalCount = toCreateCount + 3L;
+
+    for (int i = 1; i <= toCreateCount; i++) {
+      service.registerPatient(generatePatient());
+    }
+
+    PageRequest pageRequest = PageRequest.of(0, pageSize);
+    Page<Patient> page1 = service.findPage(pageRequest);
+
+    assertThat(page1.getTotalElements()).isEqualTo(totalCount);
+    List<Patient> content1 = page1.getContent();
+    Iterator<Patient> iterator = content1.iterator();
+    assertThat(iterator.next().getId()).isEqualTo(firstId);
+    assertThat(iterator.next().getId()).isEqualTo(secondId);
+    assertThat(iterator.next().getId()).isEqualTo(thirdId);
+    assertThat(content1.size()).isEqualTo(pageSize);
+
+    PageRequest pageRequest2 = PageRequest.of(2, pageSize);
+    Page<Patient> page2 = service.findPage(pageRequest2);
+    assertThat(page2.getContent().size()).isEqualTo(totalCount - (pageSize) * 2);
+  }
+
   public static Patient generatePatient() {
+    return generatePatient(randomAlphabetic(10), randomAlphabetic(10));
+  }
+
+  public static Patient generatePatient(String name, String lastName) {
     Patient patient = new Patient();
     patient.setEmail(String.format("%s@test.com", randomAlphabetic(10)));
-    patient.setFirstName(randomAlphabetic(10));
-    patient.setLastName(randomAlphabetic(10));
+    patient.setFirstName(name);
+    patient.setLastName(lastName);
     patient.setPassword(randomAlphabetic(10));
     return patient;
   }

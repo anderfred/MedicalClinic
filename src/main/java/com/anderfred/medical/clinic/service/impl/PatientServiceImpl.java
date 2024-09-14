@@ -12,6 +12,8 @@ import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,8 @@ public class PatientServiceImpl implements PatientService {
   private final PasswordEncoder passwordEncoder;
   private final ObjectMapper mapper;
 
-  public PatientServiceImpl(PatientJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
+  public PatientServiceImpl(
+      PatientJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
     this.mapper = mapper;
@@ -94,5 +97,27 @@ public class PatientServiceImpl implements PatientService {
     persisted.delete();
     Patient updated = repository.save(persisted);
     log.debug("Patient:[{}], deleted", updated);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<Patient> findPage(Pageable pageable) {
+    log.debug("Request to get Doctors page of:[{}]", pageable);
+    Page<Patient> list = repository.findPageNameSorted(pageable);
+    log.debug("Found Doctors page:[{}]", list.getTotalElements());
+    return list;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Patient findById(Long id) {
+    log.debug("Request to get Patient:[{}]", id);
+    Patient patient =
+        repository
+            .findById(id)
+            .orElseThrow(
+                () -> new BaseException("Patient not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
+    log.debug("Found patient:[{}]", patient);
+    return (Patient) MappingUtil.copy(mapper, patient).removeSensitiveData();
   }
 }
