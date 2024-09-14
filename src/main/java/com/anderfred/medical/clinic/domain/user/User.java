@@ -51,6 +51,8 @@ public abstract class User extends AbstractAuditingEntity {
   @Enumerated(EnumType.STRING)
   private UserState state = UserState.ACTIVE;
 
+  public abstract String getObjectType();
+
   public User setId(Long id) {
     this.id = id;
     return this;

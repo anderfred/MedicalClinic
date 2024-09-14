@@ -2,7 +2,6 @@ package com.anderfred.medical.clinic.config;
 
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
-import com.anderfred.medical.clinic.repository.jpa.UserJpaRepository;
 import com.anderfred.medical.clinic.security.CustomAuthenticationProvider;
 import com.anderfred.medical.clinic.security.JwtAuthenticationFilter;
 import com.anderfred.medical.clinic.security.JwtTokenService;
@@ -24,17 +23,14 @@ public class SecurityConfig {
   private final DoctorJpaRepository doctorJpaRepository;
   private final PatientJpaRepository patientJpaRepository;
   private final JwtTokenService jwtTokenService;
-  private final UserJpaRepository userJpaRepository;
 
   public SecurityConfig(
       com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository doctorJpaRepository,
       PatientJpaRepository patientJpaRepository,
-      JwtTokenService jwtTokenService,
-      UserJpaRepository userJpaRepository) {
+      JwtTokenService jwtTokenService) {
     this.doctorJpaRepository = doctorJpaRepository;
     this.patientJpaRepository = patientJpaRepository;
     this.jwtTokenService = jwtTokenService;
-    this.userJpaRepository = userJpaRepository;
   }
 
   @Bean
@@ -54,7 +50,7 @@ public class SecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
         .authenticationProvider(customAuthenticationProvider())
         .addFilterBefore(
-            new JwtAuthenticationFilter(jwtTokenService, userJpaRepository),
+            new JwtAuthenticationFilter(jwtTokenService),
             UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

@@ -8,4 +8,8 @@
              relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/202409141651_add_clinic.xml"
              relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/202409141901_add_appointment_model.xml"
+             relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/202409141916_add_exams_tables.xml"
+             relativeToChangelogFile="false"/>
 </databaseChangeLog>

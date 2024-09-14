@@ -65,7 +65,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     }
     MDCUtil.init(authentication);
     return new CustomAuthenticationToken(
-        userDetails, userDetails.getPassword(), userDetails.getAuthorities(), role, user);
+        userDetails, userDetails.getPassword(), userDetails.getAuthorities(), role, user.getId());
   }
 
   @Override

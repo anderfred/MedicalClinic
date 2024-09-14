@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="add_exam_type" author="belkov">
+        <createTable tableName="exam_type">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_medical_exam_table" author="belkov">
+        <createTable tableName="medical_exam">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--audit-->
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <!--audit end-->
+
+            <column name="appointment_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="timestamp"/>
+            <column name="result" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exam_type" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="medical_exam" baseColumnNames="exam_type"
+                                 constraintName="fk_medical_exam_exam_type_to_exam_type"
+                                 referencedTableName="exam_type" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

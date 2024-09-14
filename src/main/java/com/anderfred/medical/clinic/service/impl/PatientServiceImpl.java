@@ -6,6 +6,7 @@ import com.anderfred.medical.clinic.domain.user.Patient;
 import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
+import com.anderfred.medical.clinic.repository.jpa.AppointmentJpaRepository;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.service.PatientService;
 import com.anderfred.medical.clinic.util.MappingUtil;
@@ -25,15 +26,18 @@ public class PatientServiceImpl implements PatientService {
   private final PatientJpaRepository repository;
   private final PasswordEncoder passwordEncoder;
   private final ObjectMapper mapper;
+  private final AppointmentJpaRepository appointmentJpaRepository;
 
   public PatientServiceImpl(
-      PatientJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
+      PatientJpaRepository repository,
+      PasswordEncoder passwordEncoder,
+      ObjectMapper mapper,
+      AppointmentJpaRepository appointmentJpaRepository) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
     this.mapper = mapper;
+    this.appointmentJpaRepository = appointmentJpaRepository;
   }
-
-  // TODO Add check on only doctor is able to use apis
 
   @Override
   @Transactional
@@ -94,9 +98,15 @@ public class PatientServiceImpl implements PatientService {
       log.error("Patient already deleted");
       throw new BaseException("Patient state already deleted", ClinicExceptionCode.INVALID_REQUEST);
     }
-    persisted.delete();
-    Patient updated = repository.save(persisted);
-    log.debug("Patient:[{}], deleted", updated);
+    boolean hardDelete = appointmentJpaRepository.findIdsByPatientId(persisted.getId()).isEmpty();
+    if (hardDelete) {
+      log.warn("Patient:[{}], will be deleted completely", persisted);
+      repository.delete(persisted);
+    } else {
+      persisted.delete();
+      Patient updated = repository.save(persisted);
+      log.debug("Patient:[{}], deleted", updated);
+    }
   }
 
   @Override

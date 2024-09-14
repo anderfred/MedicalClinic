@@ -37,6 +37,15 @@ public class ClinicServiceImpl implements ClinicService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public Clinic getDefaultClinic() {
+    return repository
+        .findById(INITIAL_CLINIC_ID)
+        .orElseThrow(
+            () -> new BaseException("Clinic not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
+  }
+
+  @Override
   @Transactional
   public Clinic updateClinic(Clinic updated) {
     log.debug("Request to update Clinic:[{}]", updated);

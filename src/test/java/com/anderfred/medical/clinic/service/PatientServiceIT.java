@@ -13,6 +13,7 @@ import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.util.AssertJUtil;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -168,9 +169,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
 
     service.deletePatient(savedPatient.getId());
-    Patient persisted = repository.findById(savedPatient.getId()).orElseThrow();
-    assertThat(persisted.getState()).isEqualTo(UserState.DELETED);
+    Optional<Patient> persisted = repository.findById(savedPatient.getId());
+    assertThat(persisted).isEmpty();
   }
+
+
 
   @Test
   @WithMockUser(username = "user")

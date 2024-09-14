@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="add_appointment_table" author="belkov">
+        <createTable tableName="appointment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--audit-->
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <!--audit end-->
+
+            <column name="result_ready_date" type="timestamp"/>
+            <column name="state" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="doctor" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_doctor" type="bigint"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="appointment" baseColumnNames="doctor"
+                                 constraintName="fk_appointment_doctor_to_doctor"
+                                 referencedTableName="user" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="appointment" baseColumnNames="patient"
+                                 constraintName="fk_appointment_patient_to_patient"
+                                 referencedTableName="user" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="appointment" baseColumnNames="last_modified_doctor"
+                                 constraintName="fk_appointment_last_modified_doctor_to_doctor"
+                                 referencedTableName="user" referencedColumnNames="id"/>
+
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,7 +1,5 @@
 package com.anderfred.medical.clinic.security;
 
-import com.anderfred.medical.clinic.domain.user.User;
-import com.anderfred.medical.clinic.repository.jpa.UserJpaRepository;
 import com.anderfred.medical.clinic.util.MDCUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,12 +14,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtTokenService jwtTokenProvider;
-  private final UserJpaRepository userJpaRepository;
 
   public JwtAuthenticationFilter(
-      JwtTokenService jwtTokenProvider, UserJpaRepository userJpaRepository) {
+      JwtTokenService jwtTokenProvider) {
     this.jwtTokenProvider = jwtTokenProvider;
-    this.userJpaRepository = userJpaRepository;
   }
 
   @Override
@@ -34,9 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String username = jwtTokenProvider.extractUsername(token);
       Collection<SimpleGrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
       Long actorId = jwtTokenProvider.extractActorId(token);
-      User user = userJpaRepository.findById(actorId).orElseThrow();
       Authentication authentication =
-          new CustomAuthenticationToken(username, null, authorities, null, user);
+          new CustomAuthenticationToken(username, null, authorities, null, actorId);
       SecurityContextHolder.getContext().setAuthentication(authentication);
       MDCUtil.init(authentication);
     }

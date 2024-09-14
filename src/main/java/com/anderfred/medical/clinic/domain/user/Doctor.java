@@ -13,6 +13,11 @@ public class Doctor extends User {
   public static final Long INITIAL_DOCTOR_ID = 1L;
 
   @Override
+  public String getObjectType() {
+    return TYPE_DISCRIMINATOR;
+  }
+
+  @Override
   public String toString() {
     return new ToStringBuilder(this).append("user", super.toString()).toString();
   }

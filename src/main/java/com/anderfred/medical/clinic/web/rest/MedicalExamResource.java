@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api/medical-test")
-public class MedicalTestResource {
-  private final Logger log = LoggerFactory.getLogger(MedicalTestResource.class);
+public class MedicalExamResource {
+  private final Logger log = LoggerFactory.getLogger(MedicalExamResource.class);
 
   // TODO pdf generation by jasper soft
 }

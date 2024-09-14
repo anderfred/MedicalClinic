@@ -2,25 +2,24 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static com.anderfred.medical.clinic.security.JwtTokenService.TOKEN_KEY;
 
-import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
+import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.repository.jpa.UserJpaRepository;
 import com.anderfred.medical.clinic.security.CustomAuthenticationToken;
+import com.anderfred.medical.clinic.security.JwtTokenService;
 import com.anderfred.medical.clinic.security.UserRole;
 import com.anderfred.medical.clinic.service.AuthService;
-import com.anderfred.medical.clinic.security.JwtTokenService;
 import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -32,7 +31,10 @@ public class AuthServiceImpl implements AuthService {
   private final UserJpaRepository userJpaRepository;
 
   public AuthServiceImpl(
-          JwtTokenService jwtTokenService, AuthenticationManager authenticationManager, ObjectMapper mapper, UserJpaRepository userJpaRepository) {
+      JwtTokenService jwtTokenService,
+      AuthenticationManager authenticationManager,
+      ObjectMapper mapper,
+      UserJpaRepository userJpaRepository) {
     this.jwtTokenService = jwtTokenService;
     this.authenticationManager = authenticationManager;
     this.mapper = mapper;
@@ -65,19 +67,18 @@ public class AuthServiceImpl implements AuthService {
                 new CustomAuthenticationToken(
                     authRequest.getUsername(), authRequest.getPassword(), role));
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    enrichResponse(response, authentication);
-    authentication.getUser().setLastLoginDate(Instant.now());
-    userJpaRepository.save(authentication.getUser());
-    return MappingUtil.copy(mapper, authentication.getUser()).removeSensitiveData();
+    User user = userJpaRepository.findById(authentication.getActorId()).orElseThrow();
+    enrichResponse(response, authentication, user);
+    user.setLastLoginDate(Instant.now());
+    userJpaRepository.save(user);
+    return MappingUtil.copy(mapper, user).removeSensitiveData();
   }
 
   private void enrichResponse(
-      HttpServletResponse response, CustomAuthenticationToken authentication) {
+      HttpServletResponse response, CustomAuthenticationToken authentication, User user) {
     String jwtToken =
         jwtTokenService.generateToken(
-            authentication.getUser().getEmail(),
-            authentication.getAuthorities(),
-            authentication.getUser().getId());
+            user.getEmail(), authentication.getAuthorities(), user.getId());
     Cookie jwtCookie = new Cookie(TOKEN_KEY, jwtToken);
     // TODO to configuration
     jwtCookie.setHttpOnly(false);

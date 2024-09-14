@@ -3,6 +3,9 @@ package com.anderfred.medical.clinic.domain.clinic;
 import com.anderfred.medical.clinic.domain.base.AbstractAuditingEntity;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,5 +114,16 @@ public class Clinic extends AbstractAuditingEntity {
     setPhone(updated.getPhone());
     setName(updated.getName());
     setAddress(updated.getAddress());
+  }
+
+  public boolean checkScheduling(LocalDateTime date) {
+    DayOfWeek dayOfWeek = date.getDayOfWeek();
+    LocalTime time = date.toLocalTime();
+    return CollectionUtils.emptyIfNull(getSchedule()).stream()
+        .anyMatch(
+            d ->
+                d.getDay().equals(dayOfWeek)
+                    && !d.isDayOff()
+                    && (d.getStartTime().isBefore(time) && d.getEndTime().isAfter(time)));
   }
 }

@@ -277,4 +277,9 @@ public class DoctorServiceIT extends BaseIT {
     doctor.setPassword(randomAlphabetic(10));
     return doctor;
   }
+
+  public Doctor createPersistedDoctor() {
+    Doctor doctor = generateDoctor();
+    return doctorService.registerDoctor(doctor);
+  }
 }
