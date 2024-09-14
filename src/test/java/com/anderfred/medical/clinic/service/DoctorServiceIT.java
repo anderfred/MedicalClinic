@@ -11,6 +11,7 @@ import com.anderfred.medical.clinic.domain.user.Doctor;
 import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
+import com.anderfred.medical.clinic.security.WithCustomMockUser;
 import com.anderfred.medical.clinic.util.AssertJUtil;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldCreateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = repository.save(doctor);
@@ -88,7 +89,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldNotCreateDoctorIfEmailAlreadyExists() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = repository.save(doctor);
@@ -99,7 +100,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldRegisterDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -116,7 +117,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldUpdateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -148,7 +149,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldNotUpdateDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -180,7 +181,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldDeleteDoctor() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -201,7 +202,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldNotDeleteDoctorAlreadyDeleted() {
     Doctor doctor = generateDoctor();
     Doctor savedDoctor = doctorService.registerDoctor(doctor);
@@ -224,7 +225,7 @@ public class DoctorServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldFindPageOfDoctors() {
     // Clear all in db except initial doctor
     repository.findAll().stream()

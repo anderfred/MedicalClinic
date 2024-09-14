@@ -15,6 +15,7 @@ import com.anderfred.medical.clinic.domain.user.Patient;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.security.JwtTokenService;
+import com.anderfred.medical.clinic.security.WithCustomMockUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +40,7 @@ public class AuthServiceIT extends BaseIT {
   @Autowired private JwtTokenService jwtTokenService;
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldAuthenticateDoctor() throws Exception {
     Doctor doctor = DoctorServiceIT.generateDoctor();
     final String password = doctor.getPassword();
@@ -73,7 +74,7 @@ public class AuthServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldAuthenticatePatient() throws Exception {
     Patient patient = PatientServiceIT.generatePatient();
     final String password = patient.getPassword();
@@ -107,7 +108,7 @@ public class AuthServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser(username = "user")
+  @WithCustomMockUser(username = "user")
   public void shouldAuthenticateUsersWithSameEmail() throws Exception {
     Patient patient = PatientServiceIT.generatePatient();
     final String password = patient.getPassword();
@@ -174,7 +175,7 @@ public class AuthServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldDenyAccessDoctorToPatient() throws Exception {
     Doctor doctor = DoctorServiceIT.generateDoctor();
     final String password = doctor.getPassword();

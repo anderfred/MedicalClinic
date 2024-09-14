@@ -2,6 +2,8 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static java.util.Objects.isNull;
 
+import com.anderfred.medical.clinic.domain.audit.ActionType;
+import com.anderfred.medical.clinic.domain.audit.EntityType;
 import com.anderfred.medical.clinic.domain.user.Doctor;
 import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.BaseException;
@@ -20,17 +22,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
-  private final Logger log = LoggerFactory.getLogger(DoctorServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
   private final DoctorJpaRepository repository;
   private final PasswordEncoder passwordEncoder;
   private final ObjectMapper mapper;
+  private final AuditService auditService;
 
   public DoctorServiceImpl(
-      DoctorJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
+      DoctorJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper, AuditService auditService) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
     this.mapper = mapper;
+    this.auditService = auditService;
   }
 
   @Override
@@ -48,6 +52,7 @@ public class DoctorServiceImpl implements DoctorService {
     doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
     Doctor persisted = repository.save(doctor);
     log.debug("Doctor:[{}], registered", persisted);
+    auditService.createAuditRecord(EntityType.DOCTOR, ActionType.CREATE, persisted.getId());
     return (Doctor) MappingUtil.copy(mapper, persisted).removeSensitiveData();
   }
 
@@ -72,6 +77,7 @@ public class DoctorServiceImpl implements DoctorService {
     persisted.update(doctor);
     Doctor updated = repository.save(persisted);
     log.debug("Doctor:[{}], updated", updated);
+    auditService.createAuditRecord(EntityType.DOCTOR, ActionType.UPDATE, persisted.getId());
     return (Doctor) MappingUtil.copy(mapper, updated).removeSensitiveData();
   }
 
@@ -94,6 +100,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
     persisted.delete();
     Doctor updated = repository.save(persisted);
+    auditService.createAuditRecord(EntityType.DOCTOR, ActionType.DELETE, persisted.getId());
     log.debug("Doctor:[{}], deleted", updated);
   }
 

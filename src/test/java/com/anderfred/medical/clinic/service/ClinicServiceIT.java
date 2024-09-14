@@ -14,6 +14,8 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import com.anderfred.medical.clinic.security.WithCustomMockUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -63,6 +65,7 @@ public class ClinicServiceIT extends BaseIT {
   }
 
   @Test
+  @WithCustomMockUser
   public void shouldUpdateClinic() {
     Clinic clinic = service.findClinicById(INITIAL_CLINIC_ID);
     final String updatedName = randomAlphanumeric(10);

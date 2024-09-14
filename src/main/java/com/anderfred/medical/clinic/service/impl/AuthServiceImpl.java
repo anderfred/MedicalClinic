@@ -2,6 +2,8 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static com.anderfred.medical.clinic.security.JwtTokenService.TOKEN_KEY;
 
+import com.anderfred.medical.clinic.domain.audit.ActionType;
+import com.anderfred.medical.clinic.domain.audit.EntityType;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.repository.jpa.UserJpaRepository;
@@ -23,22 +25,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-  private final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
+  private final static Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
   private final JwtTokenService jwtTokenService;
   private final AuthenticationManager authenticationManager;
   private final ObjectMapper mapper;
   private final UserJpaRepository userJpaRepository;
+  private final AuditService auditService;
 
   public AuthServiceImpl(
       JwtTokenService jwtTokenService,
       AuthenticationManager authenticationManager,
       ObjectMapper mapper,
-      UserJpaRepository userJpaRepository) {
+      UserJpaRepository userJpaRepository,
+      AuditService auditService) {
     this.jwtTokenService = jwtTokenService;
     this.authenticationManager = authenticationManager;
     this.mapper = mapper;
     this.userJpaRepository = userJpaRepository;
+    this.auditService = auditService;
   }
 
   @Override
@@ -47,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
     log.debug("Authenticating doctor user:[{}]", authRequest);
     User user = innerAuthenticateUser(authRequest, response, UserRole.DOCTOR);
     log.debug("Authenticated doctor user:[{}]", user);
+    auditService.createAuditRecord(EntityType.DOCTOR, ActionType.LOGIN, user.getId());
     return user;
   }
 
@@ -56,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
     log.debug("Authenticating patient user:[{}]", authRequest);
     User user = innerAuthenticateUser(authRequest, response, UserRole.PATIENT);
     log.debug("Authenticated patient user:[{}]", user);
+    auditService.createAuditRecord(EntityType.PATIENT, ActionType.LOGIN, user.getId());
     return user;
   }
 

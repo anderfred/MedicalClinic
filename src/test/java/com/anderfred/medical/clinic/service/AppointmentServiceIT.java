@@ -12,6 +12,7 @@ import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.AppointmentJpaRepository;
 import com.anderfred.medical.clinic.security.CustomAuthenticationToken;
 import com.anderfred.medical.clinic.security.UserRole;
+import com.anderfred.medical.clinic.security.WithCustomMockUser;
 import com.anderfred.medical.clinic.service.impl.ExamTypeService;
 import com.anderfred.medical.clinic.service.test.UserServiceHelper;
 import com.anderfred.medical.clinic.util.AssertJUtil;
@@ -41,7 +42,7 @@ public class AppointmentServiceIT extends BaseIT {
   @Autowired ObjectMapper mapper;
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldCreateAppointmentSimple() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Patient patient = userServiceHelper.createPersistedPatient();
@@ -74,7 +75,7 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldUpdateAppointment() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Doctor doctor2 = userServiceHelper.createPersistedDoctor();
@@ -160,7 +161,7 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldDeleteAppointment() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Patient patient = userServiceHelper.createPersistedPatient();
@@ -185,7 +186,7 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldFindAppointmentById() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Patient patient = userServiceHelper.createPersistedPatient();
@@ -209,7 +210,7 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldGetAllActiveAppointments() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Patient patient = userServiceHelper.createPersistedPatient();
@@ -247,7 +248,7 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   @Test
-  @WithMockUser
+  @WithCustomMockUser
   public void shouldNotHardDeletePatientWithExistedAppointment() {
     Doctor doctor = userServiceHelper.createPersistedDoctor();
     Patient patient = userServiceHelper.createPersistedPatient();

@@ -3,6 +3,8 @@ package com.anderfred.medical.clinic.service.impl;
 import static com.anderfred.medical.clinic.domain.clinic.Clinic.INITIAL_CLINIC_ID;
 import static java.util.Objects.isNull;
 
+import com.anderfred.medical.clinic.domain.audit.ActionType;
+import com.anderfred.medical.clinic.domain.audit.EntityType;
 import com.anderfred.medical.clinic.domain.clinic.Clinic;
 import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
@@ -15,12 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClinicServiceImpl implements ClinicService {
-  private final Logger log = LoggerFactory.getLogger(ClinicServiceImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(ClinicServiceImpl.class);
 
   private final ClinicJpaRepository repository;
+  private final AuditService auditService;
 
-  public ClinicServiceImpl(ClinicJpaRepository repository) {
+  public ClinicServiceImpl(ClinicJpaRepository repository, AuditService auditService) {
     this.repository = repository;
+    this.auditService = auditService;
   }
 
   @Override
@@ -61,6 +65,7 @@ public class ClinicServiceImpl implements ClinicService {
     persisted.update(updated);
     Clinic saved = repository.save(persisted);
     log.debug("Updated Clinic:[{}]", saved);
+    auditService.createAuditRecord(EntityType.CLINIC, ActionType.UPDATE, saved.getId());
     return saved;
   }
 }

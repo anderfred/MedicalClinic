@@ -1,6 +1,8 @@
 package com.anderfred.medical.clinic.service.impl;
 
 import com.anderfred.medical.clinic.domain.Appointment;
+import com.anderfred.medical.clinic.domain.audit.ActionType;
+import com.anderfred.medical.clinic.domain.audit.EntityType;
 import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.AppointmentJpaRepository;
@@ -26,16 +28,18 @@ public class AppointmentServiceImpl implements AppointmentService {
   private final ClinicService clinicService;
   private final DoctorJpaRepository doctorJpaRepository;
   private final ObjectMapper mapper;
+  private final AuditService auditService;
 
   public AppointmentServiceImpl(
       AppointmentJpaRepository repository,
       DoctorJpaRepository doctorJpaRepository,
       ObjectMapper mapper,
-      ClinicService clinicService) {
+      ClinicService clinicService, AuditService auditService) {
     this.repository = repository;
     this.doctorJpaRepository = doctorJpaRepository;
     this.mapper = mapper;
     this.clinicService = clinicService;
+    this.auditService = auditService;
   }
 
   @Override
@@ -47,6 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     Appointment persisted = repository.save(appointment);
     Appointment copy = MappingUtil.copy(mapper, persisted);
     log.debug("Appointment created:[{}]", copy);
+    auditService.createAuditRecord(EntityType.APPOINTMENT, ActionType.CREATE, copy.getId());
     return copy;
   }
 
@@ -62,6 +67,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     persisted.update(appointment, extractCurrentDoctorId(), clinicService.getDefaultClinic());
     Appointment updated = repository.save(persisted);
     log.debug("Appointment updated:[{}]", updated);
+    auditService.createAuditRecord(EntityType.APPOINTMENT, ActionType.UPDATE, updated.getId());
     return updated;
   }
 
@@ -76,6 +82,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 () -> new BaseException("Entity not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
     appointment.delete();
     repository.save(appointment);
+    auditService.createAuditRecord(EntityType.APPOINTMENT, ActionType.DELETE, appointment.getId());
     log.debug("Appointment deleted:[{}]", id);
   }
 
