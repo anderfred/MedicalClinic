@@ -2,7 +2,7 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static com.anderfred.medical.clinic.security.JwtTokenService.TOKEN_KEY;
 
-import com.anderfred.medical.clinic.domain.User;
+import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import com.anderfred.medical.clinic.repository.jpa.UserJpaRepository;
 import com.anderfred.medical.clinic.security.CustomAuthenticationToken;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Service
 public class AuthServiceImpl implements AuthService {

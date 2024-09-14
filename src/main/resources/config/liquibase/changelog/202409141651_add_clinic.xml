@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="add_clinic_table" author="belkov">
+        <createTable tableName="clinic">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <!--audit-->
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <!--audit end-->
+
+            <column name="name" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="logo" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="JSON"/>
+            <column name="schedule" type="JSON"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="initialize_clinic" author="belkov">
+        <sql>
+            INSERT INTO clinic (
+                created_date,
+                last_modified_date,
+                created_by,
+                last_modified_by,
+                name,
+                phone,
+                logo,
+                address,
+                schedule
+            )
+            VALUES (
+                       '2024-09-13 12:42:11.628978',
+                       '2024-09-13 12:42:11.628978',
+                       'system',
+                       'system',
+                       'Test clinic',
+                       '+1111111111',
+                       'http://test12313321.com/testlogo.png',
+                       '{"addressLine1":"First street", "addressLine2":"3","city":"New York", "zip":"123123", "state":"NY"}',
+                       '[{"day":"MONDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"TUESDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"WEDNESDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"THURSDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"FRIDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"SATURDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false},
+                         {"day":"SUNDAY", "startTime":"9:00", "endTime":"20:00", "dayOff":false}]'
+                   );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

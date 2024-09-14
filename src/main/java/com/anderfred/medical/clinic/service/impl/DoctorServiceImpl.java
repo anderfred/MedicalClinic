@@ -2,12 +2,14 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static java.util.Objects.isNull;
 
-import com.anderfred.medical.clinic.domain.Doctor;
-import com.anderfred.medical.clinic.domain.UserState;
+import com.anderfred.medical.clinic.domain.user.Doctor;
+import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.service.DoctorService;
+import com.anderfred.medical.clinic.util.MappingUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -20,10 +22,12 @@ public class DoctorServiceImpl implements DoctorService {
 
   private final DoctorJpaRepository repository;
   private final PasswordEncoder passwordEncoder;
+  private final ObjectMapper mapper;
 
-  public DoctorServiceImpl(DoctorJpaRepository repository, PasswordEncoder passwordEncoder) {
+  public DoctorServiceImpl(DoctorJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
+    this.mapper = mapper;
   }
 
   @Override
@@ -41,7 +45,7 @@ public class DoctorServiceImpl implements DoctorService {
     doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
     Doctor persisted = repository.save(doctor);
     log.debug("Doctor:[{}], registered", persisted);
-    return persisted;
+    return (Doctor) MappingUtil.copy(mapper, persisted).removeSensitiveData();
   }
 
   @Override
@@ -65,7 +69,7 @@ public class DoctorServiceImpl implements DoctorService {
     persisted.update(doctor);
     Doctor updated = repository.save(persisted);
     log.debug("Doctor:[{}], updated", updated);
-    return updated;
+    return (Doctor) MappingUtil.copy(mapper, updated).removeSensitiveData();
   }
 
   @Override

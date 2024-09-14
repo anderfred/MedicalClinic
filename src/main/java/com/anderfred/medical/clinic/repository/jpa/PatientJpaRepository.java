@@ -1,6 +1,6 @@
 package com.anderfred.medical.clinic.repository.jpa;
 
-import com.anderfred.medical.clinic.domain.Patient;
+import com.anderfred.medical.clinic.domain.user.Patient;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,14 +1,14 @@
-package com.anderfred.medical.clinic.domain;
+package com.anderfred.medical.clinic.domain.user;
 
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorValue(value = Doctor.TYPE_DISCRIMINATOR)
+@DiscriminatorValue(value = Patient.TYPE_DISCRIMINATOR)
 @Access(AccessType.FIELD)
-public class Doctor extends User {
-  public static final String TYPE_DISCRIMINATOR = "doctor";
+public class Patient extends User {
+  public static final String TYPE_DISCRIMINATOR = "patient";
 
   @Override
   public String toString() {

@@ -33,7 +33,9 @@
             <column name="email" type="varchar(512)">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_login_date" type="timestamp"/>
+            <column name="last_login_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
             <column name="state" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
@@ -51,7 +53,7 @@
             INSERT INTO user(created_date, last_modified_date, created_by, last_modified_by, first_name,
                              last_name, email, last_login_date, password, object_type, state)
             VALUES ('2024-09-13 12:42:11.628978', '2024-09-13 12:42:11.628978', 'system', 'system', 'admin',
-                    'admin', 'admin@test.com', null, '$2a$10$RmS2Nplq7Qwoc9cVPf/iHOez0AnBLeIEYtVQFCAxKwTaOj6P9GBX2', 'doctor', 'ACTIVE');
+                    'admin', 'admin@test.com', '2024-09-13 12:42:11.628978', '$2a$10$RmS2Nplq7Qwoc9cVPf/iHOez0AnBLeIEYtVQFCAxKwTaOj6P9GBX2', 'doctor', 'ACTIVE');
         </sql>
     </changeSet>
     <changeSet id="user_email_type_constraint" author="belkov">

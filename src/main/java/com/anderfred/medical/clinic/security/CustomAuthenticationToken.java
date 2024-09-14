@@ -1,6 +1,6 @@
 package com.anderfred.medical.clinic.security;
 
-import com.anderfred.medical.clinic.domain.User;
+import com.anderfred.medical.clinic.domain.user.User;
 import java.util.Collection;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,12 +13,6 @@ public class CustomAuthenticationToken extends UsernamePasswordAuthenticationTok
       Object principal, Object credentials, UserRole role) {
     super(principal, credentials);
     this.role = role;
-  }
-
-  public CustomAuthenticationToken(
-      Object principal, Collection<? extends GrantedAuthority> authorities) {
-    super(principal, null, authorities);
-    this.role = null;
   }
 
   public CustomAuthenticationToken(

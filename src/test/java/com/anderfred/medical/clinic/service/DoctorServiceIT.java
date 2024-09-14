@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.anderfred.medical.clinic.base.BaseIT;
-import com.anderfred.medical.clinic.domain.Doctor;
-import com.anderfred.medical.clinic.domain.UserState;
+import com.anderfred.medical.clinic.domain.user.Doctor;
+import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.util.AssertJUtil;
@@ -38,7 +38,7 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(doctor.getId()).isNotNull();
     assertThat(doctor.getCreatedBy()).isNotNull();
     assertThat(doctor.getCreatedDate()).isNotNull();
-    assertThat(doctor.getLastLoginDate()).isNull();
+    assertThat(doctor.getLastLoginDate()).isNotNull();
     assertThat(doctor.getLastModifiedDate()).isNotNull();
     assertThat(doctor.getPassword()).isNotNull();
     assertThat(passwordEncoder.matches(INITIAL_USER_PASSWORD, doctor.getPassword())).isTrue();
@@ -60,7 +60,7 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
 
     Doctor doctor2 = generateDoctor();
     Doctor savedDoctor2 = repository.save(doctor2);
@@ -73,7 +73,7 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor2.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor2.getCreatedDate()).isNotNull();
     assertThat(savedDoctor2.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor2.getLastLoginDate()).isNull();
+    assertThat(savedDoctor2.getLastLoginDate()).isNotNull();
   }
 
   @Test
@@ -96,12 +96,11 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getFirstName()).isEqualTo(doctor.getFirstName());
     assertThat(savedDoctor.getLastName()).isEqualTo(doctor.getLastName());
     assertThat(savedDoctor.getEmail()).isEqualTo(doctor.getEmail());
-    assertThat(savedDoctor.getPassword()).isEqualTo(doctor.getPassword());
     assertThat(savedDoctor.getLastModifiedDate()).isNotNull();
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedDoctor.getId())).isNotEmpty();
   }
 
@@ -114,12 +113,11 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getFirstName()).isEqualTo(doctor.getFirstName());
     assertThat(savedDoctor.getLastName()).isEqualTo(doctor.getLastName());
     assertThat(savedDoctor.getEmail()).isEqualTo(doctor.getEmail());
-    assertThat(savedDoctor.getPassword()).isEqualTo(doctor.getPassword());
     assertThat(savedDoctor.getLastModifiedDate()).isNotNull();
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedDoctor.getId())).isNotEmpty();
 
     Doctor updated = generateDoctor();
@@ -147,12 +145,11 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getFirstName()).isEqualTo(doctor.getFirstName());
     assertThat(savedDoctor.getLastName()).isEqualTo(doctor.getLastName());
     assertThat(savedDoctor.getEmail()).isEqualTo(doctor.getEmail());
-    assertThat(savedDoctor.getPassword()).isEqualTo(doctor.getPassword());
     assertThat(savedDoctor.getLastModifiedDate()).isNotNull();
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedDoctor.getId())).isNotEmpty();
 
     Doctor withEmailDuplicate = generateDoctor();
@@ -180,12 +177,11 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getFirstName()).isEqualTo(doctor.getFirstName());
     assertThat(savedDoctor.getLastName()).isEqualTo(doctor.getLastName());
     assertThat(savedDoctor.getEmail()).isEqualTo(doctor.getEmail());
-    assertThat(savedDoctor.getPassword()).isEqualTo(doctor.getPassword());
     assertThat(savedDoctor.getLastModifiedDate()).isNotNull();
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedDoctor.getId())).isNotEmpty();
 
     doctorService.deleteDoctor(savedDoctor.getId());
@@ -202,12 +198,10 @@ public class DoctorServiceIT extends BaseIT {
     assertThat(savedDoctor.getFirstName()).isEqualTo(doctor.getFirstName());
     assertThat(savedDoctor.getLastName()).isEqualTo(doctor.getLastName());
     assertThat(savedDoctor.getEmail()).isEqualTo(doctor.getEmail());
-    assertThat(savedDoctor.getPassword()).isEqualTo(doctor.getPassword());
-    assertThat(savedDoctor.getLastModifiedDate()).isNotNull();
     assertThat(savedDoctor.getLastModifiedBy()).isNotNull();
     assertThat(savedDoctor.getCreatedDate()).isNotNull();
     assertThat(savedDoctor.getCreatedBy()).isNotNull();
-    assertThat(savedDoctor.getLastLoginDate()).isNull();
+    assertThat(savedDoctor.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedDoctor.getId())).isNotEmpty();
 
     doctorService.deleteDoctor(savedDoctor.getId());

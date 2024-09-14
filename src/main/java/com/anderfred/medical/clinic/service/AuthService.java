@@ -1,6 +1,6 @@
 package com.anderfred.medical.clinic.service;
 
-import com.anderfred.medical.clinic.domain.User;
+import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import jakarta.servlet.http.HttpServletResponse;
 

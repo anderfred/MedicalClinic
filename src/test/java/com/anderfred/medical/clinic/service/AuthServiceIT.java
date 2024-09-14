@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.anderfred.medical.clinic.base.BaseIT;
-import com.anderfred.medical.clinic.domain.Doctor;
-import com.anderfred.medical.clinic.domain.Patient;
+import com.anderfred.medical.clinic.domain.user.Doctor;
+import com.anderfred.medical.clinic.domain.user.Patient;
 import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.security.JwtTokenService;

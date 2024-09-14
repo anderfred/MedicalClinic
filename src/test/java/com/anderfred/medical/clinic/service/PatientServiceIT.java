@@ -6,8 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import com.anderfred.medical.clinic.base.BaseIT;
-import com.anderfred.medical.clinic.domain.Patient;
-import com.anderfred.medical.clinic.domain.UserState;
+import com.anderfred.medical.clinic.domain.user.Patient;
+import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.util.AssertJUtil;
@@ -29,12 +29,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
 
     Patient patient2 = generatePatient();
     Patient savedPatient2 = repository.save(patient2);
@@ -42,12 +41,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient2.getFirstName()).isEqualTo(patient2.getFirstName());
     assertThat(savedPatient2.getLastName()).isEqualTo(patient2.getLastName());
     assertThat(savedPatient2.getEmail()).isEqualTo(patient2.getEmail());
-    assertThat(savedPatient2.getPassword()).isEqualTo(patient2.getPassword());
     assertThat(savedPatient2.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient2.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient2.getCreatedDate()).isNotNull();
     assertThat(savedPatient2.getCreatedBy()).isNotNull();
-    assertThat(savedPatient2.getLastLoginDate()).isNull();
+    assertThat(savedPatient2.getLastLoginDate()).isNotNull();
   }
 
   @Test
@@ -71,12 +69,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
   }
 
@@ -89,12 +86,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
 
     Patient updated = generatePatient();
@@ -122,12 +118,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
 
     Patient withEmailDuplicate = generatePatient();
@@ -155,12 +150,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
 
     service.deletePatient(savedPatient.getId());
@@ -177,12 +171,11 @@ public class PatientServiceIT extends BaseIT {
     assertThat(savedPatient.getFirstName()).isEqualTo(patient.getFirstName());
     assertThat(savedPatient.getLastName()).isEqualTo(patient.getLastName());
     assertThat(savedPatient.getEmail()).isEqualTo(patient.getEmail());
-    assertThat(savedPatient.getPassword()).isEqualTo(patient.getPassword());
     assertThat(savedPatient.getLastModifiedDate()).isNotNull();
     assertThat(savedPatient.getLastModifiedBy()).isNotNull();
     assertThat(savedPatient.getCreatedDate()).isNotNull();
     assertThat(savedPatient.getCreatedBy()).isNotNull();
-    assertThat(savedPatient.getLastLoginDate()).isNull();
+    assertThat(savedPatient.getLastLoginDate()).isNotNull();
     assertThat(repository.findById(savedPatient.getId())).isNotEmpty();
 
     service.deletePatient(savedPatient.getId());

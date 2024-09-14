@@ -2,12 +2,14 @@ package com.anderfred.medical.clinic.service.impl;
 
 import static java.util.Objects.isNull;
 
-import com.anderfred.medical.clinic.domain.Patient;
-import com.anderfred.medical.clinic.domain.UserState;
+import com.anderfred.medical.clinic.domain.user.Patient;
+import com.anderfred.medical.clinic.domain.user.UserState;
 import com.anderfred.medical.clinic.exceptions.BaseException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.PatientJpaRepository;
 import com.anderfred.medical.clinic.service.PatientService;
+import com.anderfred.medical.clinic.util.MappingUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +22,12 @@ public class PatientServiceImpl implements PatientService {
 
   private final PatientJpaRepository repository;
   private final PasswordEncoder passwordEncoder;
+  private final ObjectMapper mapper;
 
-  public PatientServiceImpl(PatientJpaRepository repository, PasswordEncoder passwordEncoder) {
+  public PatientServiceImpl(PatientJpaRepository repository, PasswordEncoder passwordEncoder, ObjectMapper mapper) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
+    this.mapper = mapper;
   }
 
   // TODO Add check on only doctor is able to use apis
@@ -43,7 +47,7 @@ public class PatientServiceImpl implements PatientService {
     patient.setPassword(passwordEncoder.encode(patient.getPassword()));
     Patient persisted = repository.save(patient);
     log.debug("Patient:[{}], registered", persisted);
-    return persisted;
+    return (Patient) MappingUtil.copy(mapper, patient).removeSensitiveData();
   }
 
   @Override
@@ -67,7 +71,7 @@ public class PatientServiceImpl implements PatientService {
     persisted.update(patient);
     Patient updated = repository.save(persisted);
     log.debug("Patient:[{}], updated", updated);
-    return updated;
+    return (Patient) MappingUtil.copy(mapper, updated).removeSensitiveData();
   }
 
   @Override

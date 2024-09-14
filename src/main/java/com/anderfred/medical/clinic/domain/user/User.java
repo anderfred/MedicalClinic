@@ -1,17 +1,14 @@
-package com.anderfred.medical.clinic.domain;
+package com.anderfred.medical.clinic.domain.user;
 
 import com.anderfred.medical.clinic.JsonConstants;
 import com.anderfred.medical.clinic.domain.base.AbstractAuditingEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Entity
@@ -25,9 +22,7 @@ import org.springframework.beans.factory.annotation.Configurable;
   @JsonSubTypes.Type(value = Doctor.class, name = Doctor.TYPE_DISCRIMINATOR),
   @JsonSubTypes.Type(value = Patient.class, name = Patient.TYPE_DISCRIMINATOR)
 })
-public class User extends AbstractAuditingEntity {
-
-  @Autowired @Transient @JsonIgnore private ObjectMapper objectMapper;
+public abstract class User extends AbstractAuditingEntity {
 
   @Column(name = "id")
   @Id
@@ -49,8 +44,8 @@ public class User extends AbstractAuditingEntity {
   @Column(name = "password", nullable = false)
   private String password;
 
-  @Column(name = "last_login_date")
-  private Instant lastLoginDate;
+  @Column(name = "last_login_date", nullable = false)
+  private Instant lastLoginDate = Instant.now();
 
   @Column(name = "state", nullable = false)
   @Enumerated(EnumType.STRING)

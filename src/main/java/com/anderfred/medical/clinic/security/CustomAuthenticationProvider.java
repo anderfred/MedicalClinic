@@ -1,6 +1,6 @@
 package com.anderfred.medical.clinic.security;
 
-import com.anderfred.medical.clinic.domain.User;
+import com.anderfred.medical.clinic.domain.user.User;
 import com.anderfred.medical.clinic.exceptions.AccessDeniedException;
 import com.anderfred.medical.clinic.exceptions.ClinicExceptionCode;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
