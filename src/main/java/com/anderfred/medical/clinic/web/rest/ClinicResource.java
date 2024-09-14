@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class ClinicResource {
   }
 
   @GetMapping("/{id}")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Clinic> findClinicById(@PathVariable Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to get clinic info:[{}]", id);
@@ -29,6 +31,7 @@ public class ClinicResource {
   }
 
   @PutMapping("/")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Clinic> updateClinic(@RequestBody Clinic clinic) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to update clinic info:[{}]", clinic);

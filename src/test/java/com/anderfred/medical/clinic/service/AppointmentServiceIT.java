@@ -30,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 
 public class AppointmentServiceIT extends BaseIT {
   @Autowired AppointmentService appointmentService;
@@ -194,6 +193,15 @@ public class AppointmentServiceIT extends BaseIT {
     mockSecurityContext(doctor.getId(), doctor.getEmail(), UserRole.DOCTOR);
     LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     Appointment appointment = new Appointment().setResultReadyDate(date);
+    ExamType examType = generateExamType();
+    LocalDateTime examDate = LocalDateTime.of(2024, 10, 12, 15, 12);
+    MedicalExam exam1 =
+        new MedicalExam()
+            .setDate(examDate)
+            .setExamType(examType)
+            .setAppointment(appointment)
+            .setResult(MedicalExamResult.POSITIVE);
+    appointment.setMedicalExams(List.of(exam1));
     Appointment saved = appointmentService.addAppointment(appointment, patient.getId());
     Appointment persisted = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
     assertThat(persisted.getDoctor().getId()).isEqualTo(doctor.getId());
@@ -207,6 +215,12 @@ public class AppointmentServiceIT extends BaseIT {
     AssertJUtil.assertBaseException(
         ClinicExceptionCode.ENTITY_NOT_FOUND,
         () -> appointmentService.findAppointmentById(randomLong()));
+
+    List<MedicalExam> allExams = medicalExamService.findAll(patient.getId());
+    assertThat(allExams).hasSize(1);
+    MedicalExam exam = allExams.iterator().next();
+    assertThat(exam.getDate()).isEqualTo(examDate);
+    assertThat(exam.getResult()).isEqualTo(MedicalExamResult.POSITIVE);
   }
 
   @Test
@@ -266,6 +280,24 @@ public class AppointmentServiceIT extends BaseIT {
     patientService.deletePatient(patient.getId());
     Patient found = patientService.findById(patient.getId());
     assertThat(found).isNotNull();
+  }
+
+  @Test
+  @WithCustomMockUser
+  public void shouldCloseAppointments() {
+    Doctor doctor = userServiceHelper.createPersistedDoctor();
+    Patient patient = userServiceHelper.createPersistedPatient();
+
+    mockSecurityContext(doctor.getId(), doctor.getEmail(), UserRole.DOCTOR);
+    LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    Appointment appointment = new Appointment().setResultReadyDate(date);
+    Appointment saved = appointmentService.addAppointment(appointment, patient.getId());
+    Appointment persisted = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
+    assertThat(persisted.getState()).isEqualTo(AppointmentState.NEW);
+
+    appointmentService.closeAppointments();
+    Appointment updated = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
+    assertThat(updated.getState()).isEqualTo(AppointmentState.CLOSED);
   }
 
   private ExamType generateExamType() {

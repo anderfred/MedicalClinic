@@ -79,7 +79,7 @@ org:
   quartz:
     scheduler:
       enabled: true
-      close-appointment: 0/1 * * ? * * *
+      close-appointments: 0 0 0 * * ?
 
 application:
   logging:

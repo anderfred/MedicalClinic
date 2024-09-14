@@ -10,9 +10,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.anderfred.medical.clinic.base.BaseIT;
+import com.anderfred.medical.clinic.domain.audit.Audit;
+import com.anderfred.medical.clinic.domain.audit.EntityType;
+import com.anderfred.medical.clinic.domain.auth.AuthRequest;
 import com.anderfred.medical.clinic.domain.user.Doctor;
 import com.anderfred.medical.clinic.domain.user.Patient;
-import com.anderfred.medical.clinic.domain.auth.AuthRequest;
+import com.anderfred.medical.clinic.repository.jpa.AuditJpaRepository;
 import com.anderfred.medical.clinic.repository.jpa.DoctorJpaRepository;
 import com.anderfred.medical.clinic.security.JwtTokenService;
 import com.anderfred.medical.clinic.security.WithCustomMockUser;
@@ -22,10 +25,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -38,6 +42,7 @@ public class AuthServiceIT extends BaseIT {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
   @Autowired private JwtTokenService jwtTokenService;
+  @Autowired private AuditJpaRepository auditJpaRepository;
 
   @Test
   @WithCustomMockUser(username = "user")
@@ -71,6 +76,12 @@ public class AuthServiceIT extends BaseIT {
     // 24 hours = 24 * 60 * 60 * 1000 milliseconds
     long twentyFourHoursInMillis = TimeUnit.HOURS.toMillis(24);
     assertThat(diffInMillis == twentyFourHoursInMillis).isTrue();
+
+    // Check audit record created
+    Page<Audit> auditRecords =
+        auditJpaRepository.findByActorType(
+            doctor.getId(), PageRequest.of(0, 20), EntityType.DOCTOR);
+    assertThat(auditRecords.getTotalElements() > 0).isTrue();
   }
 
   @Test
@@ -172,49 +183,6 @@ public class AuthServiceIT extends BaseIT {
                 .content(objectMapper.writeValueAsString(authRequest)))
         .andExpect(status().isForbidden())
         .andReturn();
-  }
-
-  @Test
-  @WithCustomMockUser
-  public void shouldDenyAccessDoctorToPatient() throws Exception {
-    Doctor doctor = DoctorServiceIT.generateDoctor();
-    final String password = doctor.getPassword();
-    Doctor persisted = doctorService.registerDoctor(doctor);
-
-    Patient patient = PatientServiceIT.generatePatient();
-    final String password2 = patient.getPassword();
-    Patient persisted2 = patientService.registerPatient(patient);
-
-    SecurityContextHolder.clearContext();
-
-    AuthRequest authRequest = AuthRequest.of(doctor.getEmail(), password);
-
-    MvcResult result =
-        mockMvc
-            .perform(
-                post("/api/auth/doctor-login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(authRequest)))
-            .andExpect(status().isOk())
-            .andReturn();
-    MockHttpServletResponse response = result.getResponse();
-    String doctorToken = response.getCookie(TOKEN_KEY).getValue();
-
-    // Access to patient resource blocked
-    mockMvc
-        .perform(
-            delete("/api/patient/" + persisted2.getId())
-                .header("Authorization", "Bearer " + doctorToken)
-                .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isForbidden());
-
-    // Access to doctor resource allowed
-    mockMvc
-        .perform(
-            delete("/api/doctor/" + persisted.getId())
-                .header("Authorization", "Bearer " + doctorToken)
-                .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
   }
 
   @Test

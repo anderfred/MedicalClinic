@@ -14,4 +14,6 @@ public interface AppointmentService {
   Appointment findAppointmentById(Long id);
 
   Page<Appointment> findActiveAppointments(Pageable pageable);
+
+  void closeAppointments();
 }

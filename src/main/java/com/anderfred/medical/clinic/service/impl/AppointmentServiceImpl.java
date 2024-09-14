@@ -34,7 +34,8 @@ public class AppointmentServiceImpl implements AppointmentService {
       AppointmentJpaRepository repository,
       DoctorJpaRepository doctorJpaRepository,
       ObjectMapper mapper,
-      ClinicService clinicService, AuditService auditService) {
+      ClinicService clinicService,
+      AuditService auditService) {
     this.repository = repository;
     this.doctorJpaRepository = doctorJpaRepository;
     this.mapper = mapper;
@@ -117,5 +118,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         .orElseThrow(
             () -> new BaseException("Entity not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
     return actorId;
+  }
+
+  @Override
+  @Transactional
+  public void closeAppointments() {
+    log.debug("Request to close appointments");
+    repository.closeAppointments();
   }
 }

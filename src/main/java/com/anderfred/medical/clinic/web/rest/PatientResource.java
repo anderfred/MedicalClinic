@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class PatientResource {
   }
 
   @PostMapping("/register")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Patient> registerPatient(@RequestBody Patient patient) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to register patient by:[{}]", patient);
@@ -31,6 +33,7 @@ public class PatientResource {
   }
 
   @GetMapping("/{id}")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Patient> getById(@PathVariable Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to get patient by id:[{}]", id);
@@ -40,6 +43,7 @@ public class PatientResource {
   }
 
   @PutMapping("/")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Patient> updatePatient(@RequestBody Patient patient) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to update patient by:[{}]", patient);
@@ -48,9 +52,9 @@ public class PatientResource {
     return ResponseEntity.ok(updated);
   }
 
-  // TODO delete totally if not constraints
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> updatePatient(@PathVariable(name = "id") Long id) {
+  @Secured("DOCTOR_ROLE")
+  public ResponseEntity<Void> deletePatient(@PathVariable(name = "id") Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to delete patient by:[{}]", id);
     patientService.deletePatient(id);
@@ -59,6 +63,7 @@ public class PatientResource {
   }
 
   @GetMapping("/page")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Page<Patient>> findPage(Pageable pageable) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to get page:[{}] of Patients", pageable);

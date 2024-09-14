@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class AppointmentResource {
   }
 
   @GetMapping("{id}")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Appointment> getAppointment(@PathVariable Long id) {
     log.debug("REST request to get Appointment by id:[{}]", id);
     Appointment appointment = appointmentService.findAppointmentById(id);
@@ -29,6 +31,7 @@ public class AppointmentResource {
   }
 
   @PostMapping("/")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Appointment> createAppointment(
       @RequestBody Appointment appointment,
       @RequestParam(value = "patientId", required = true) Long patientId) {
@@ -39,6 +42,7 @@ public class AppointmentResource {
   }
 
   @PutMapping("/")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Appointment> updateAppointment(@RequestBody Appointment appointment) {
     log.debug("REST request to update Appointment :[{}]", appointment);
     Appointment update = appointmentService.update(appointment);
@@ -47,6 +51,7 @@ public class AppointmentResource {
   }
 
   @GetMapping("/active")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Page<Appointment>> getAppointmentsActive(Pageable pageable) {
     log.debug("REST request to getAppointmentsActive");
     Page<Appointment> activeAppointments = appointmentService.findActiveAppointments(pageable);

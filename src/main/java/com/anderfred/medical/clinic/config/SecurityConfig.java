@@ -40,10 +40,6 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/api/auth/**")
                     .permitAll()
-                    .requestMatchers("/api/doctor/**")
-                    .hasAuthority(UserRole.DOCTOR.getDescription())
-                    .requestMatchers("/api/patient/**")
-                    .hasAuthority(UserRole.PATIENT.getDescription())
                     .requestMatchers("/api/**")
                     .authenticated())
         .formLogin(AbstractHttpConfigurer::disable)

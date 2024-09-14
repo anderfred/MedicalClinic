@@ -2,6 +2,7 @@ package com.anderfred.medical.clinic.web.rest;
 
 import com.anderfred.medical.clinic.domain.user.Doctor;
 import com.anderfred.medical.clinic.domain.user.Patient;
+import com.anderfred.medical.clinic.security.UserRole;
 import com.anderfred.medical.clinic.service.DoctorService;
 import jakarta.servlet.ServletRequest;
 import org.apache.commons.lang3.time.StopWatch;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.Doc;
@@ -26,6 +28,7 @@ public class DoctorResource {
   }
 
   @PostMapping("/register")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Doctor> registerDoctor(@RequestBody Doctor doctor) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to register Doctor by:[{}]", doctor);
@@ -35,6 +38,7 @@ public class DoctorResource {
   }
 
   @PutMapping("/")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Doctor> updateDoctor(@RequestBody Doctor doctor) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to update Doctor by:[{}]", doctor);
@@ -44,6 +48,7 @@ public class DoctorResource {
   }
 
   @GetMapping("/{id}")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Doctor> getById(@PathVariable Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to get doctor by id:[{}]", id);
@@ -53,6 +58,7 @@ public class DoctorResource {
   }
 
   @DeleteMapping("/{id}")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Void> updateDoctor(@PathVariable(name = "id") Long id) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to delete Doctor by:[{}]", id);
@@ -62,6 +68,7 @@ public class DoctorResource {
   }
 
   @GetMapping("/page")
+  @Secured("DOCTOR_ROLE")
   public ResponseEntity<Page<Doctor>> findPage(Pageable pageable) {
     StopWatch stopWatch = StopWatch.createStarted();
     log.debug("START | Request to get page:[{}] of Doctors", pageable);

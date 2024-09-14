@@ -1,9 +1,12 @@
 package com.anderfred.medical.clinic.config;
 
+import com.anderfred.medical.clinic.job.CloseAppointmentJob;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
@@ -16,18 +19,17 @@ public class JobConfiguration {
 
   private final long startDelay = 1000 * 60 * configDelay;
 
-  /*@Bean
+  @Bean
   public JobDetailFactoryBean closeAppointmentJobDetails() {
     return createJobDetail(CloseAppointmentJob.class);
-  }*/
+  }
 
-  /*//TODO
   @Bean(name = "closeAppointmentJobDetailsJobTrigger")
   public CronTriggerFactoryBean closeAppointmentJobDetailsJobTrigger(
       @Qualifier("closeAppointmentJobDetails") JobDetail jobDetail,
-      @Value("${org.quartz.scheduler.close-appointment}") String cronExpression) {
+      @Value("${org.quartz.scheduler.close-appointments}") String cronExpression) {
     return createCronTrigger(jobDetail, cronExpression);
-  }*/
+  }
 
   public CronTriggerFactoryBean createCronTrigger(JobDetail jobDetail, String cronExpression) {
     CronTriggerFactoryBean factoryBean = new CronTriggerFactoryBean();
