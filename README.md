@@ -35,3 +35,4 @@ mysql:8.0.33
 ```
 
 ### For api testing prepared postman project in file - PostmanAPI.json
+### Application runs on port 8761
