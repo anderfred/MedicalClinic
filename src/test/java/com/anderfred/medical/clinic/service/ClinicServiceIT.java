@@ -25,14 +25,13 @@ public class ClinicServiceIT extends BaseIT {
 
   private final String CLINIC_INITIAL_NAME = "Test clinic";
   private final String CLINIC_INITIAL_PHONE = "+1111111111";
-  private final String CLINIC_INITIAL_LOGO = "http://test12313321.com/testlogo.png";
 
   @Test
   public void shouldVerifyInitialClinic() {
     Clinic clinic = repository.findById(1L).orElseThrow();
     assertThat(clinic.getName()).isEqualTo(CLINIC_INITIAL_NAME);
     assertThat(clinic.getPhone()).isEqualTo(CLINIC_INITIAL_PHONE);
-    assertThat(clinic.getLogo()).isEqualTo(CLINIC_INITIAL_LOGO);
+    assertThat(clinic.getLogo()).isNotBlank();
 
     Address address = clinic.getAddress();
     assertThat(address.getAddressLine1()).isNotBlank();

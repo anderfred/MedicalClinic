@@ -14,7 +14,7 @@ import com.anderfred.medical.clinic.security.CustomAuthenticationToken;
 import com.anderfred.medical.clinic.security.UserRole;
 import com.anderfred.medical.clinic.security.WithCustomMockUser;
 import com.anderfred.medical.clinic.service.impl.ExamTypeService;
-import com.anderfred.medical.clinic.service.test.UserServiceHelper;
+import com.anderfred.medical.clinic.test.UserServiceHelper;
 import com.anderfred.medical.clinic.util.AssertJUtil;
 import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

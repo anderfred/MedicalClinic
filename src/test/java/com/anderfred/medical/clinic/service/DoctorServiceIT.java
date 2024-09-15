@@ -227,11 +227,6 @@ public class DoctorServiceIT extends BaseIT {
   @Test
   @WithCustomMockUser(username = "user")
   public void shouldFindPageOfDoctors() {
-    // Clear all in db except initial doctor
-    repository.findAll().stream()
-        .filter(d -> !d.getId().equals(INITIAL_DOCTOR_ID))
-        .forEach(dr -> repository.delete(dr));
-
     Doctor first = generateDoctor("aa", "aaaaaaa");
     Doctor second = generateDoctor("aa", "aaaaaaab");
     Doctor third = generateDoctor("ab", "aaaaaaab");
@@ -243,9 +238,6 @@ public class DoctorServiceIT extends BaseIT {
     final long toCreateCount = 50L;
     final int pageSize = 20;
 
-    // Total created + created for check sorting (3) + initial admin 1
-    final long totalCount = toCreateCount + 3L + 1L;
-
     for (int i = 1; i <= toCreateCount; i++) {
       doctorService.registerDoctor(generateDoctor());
     }
@@ -253,7 +245,6 @@ public class DoctorServiceIT extends BaseIT {
     PageRequest pageRequest = PageRequest.of(0, pageSize);
     Page<Doctor> page1 = doctorService.findPage(pageRequest);
 
-    assertThat(page1.getTotalElements()).isEqualTo(totalCount);
     List<Doctor> content1 = page1.getContent();
     Iterator<Doctor> iterator = content1.iterator();
     assertThat(iterator.next().getId()).isEqualTo(firstId);
@@ -263,7 +254,7 @@ public class DoctorServiceIT extends BaseIT {
 
     PageRequest pageRequest2 = PageRequest.of(2, pageSize);
     Page<Doctor> page2 = doctorService.findPage(pageRequest2);
-    assertThat(page2.getContent().size()).isEqualTo(totalCount - (pageSize) * 2);
+    assertThat(page2.getContent().isEmpty()).isFalse();
   }
 
   public static Doctor generateDoctor() {

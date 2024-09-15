@@ -1,4 +1,4 @@
-package com.anderfred.medical.clinic.service.test;
+package com.anderfred.medical.clinic.test;
 
 import com.anderfred.medical.clinic.domain.user.Doctor;
 import com.anderfred.medical.clinic.domain.user.Patient;

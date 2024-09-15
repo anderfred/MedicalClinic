@@ -292,8 +292,7 @@ public class AuthServiceIT extends BaseIT {
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(authRequest)))
-            .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(status().isOk());
 
     mockMvc
             .perform(
@@ -301,8 +300,7 @@ public class AuthServiceIT extends BaseIT {
                             .header("Authorization", "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(authRequest)))
-            .andExpect(status().isOk())
-            .andReturn();
+            .andExpect(status().isBadRequest());
 
     //Forbidden
     mockMvc
