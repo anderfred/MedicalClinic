@@ -29,19 +29,16 @@ public class AuthServiceImpl implements AuthService {
 
   private final JwtTokenService jwtTokenService;
   private final AuthenticationManager authenticationManager;
-  private final ObjectMapper mapper;
   private final UserJpaRepository userJpaRepository;
   private final AuditService auditService;
 
   public AuthServiceImpl(
       JwtTokenService jwtTokenService,
       AuthenticationManager authenticationManager,
-      ObjectMapper mapper,
       UserJpaRepository userJpaRepository,
       AuditService auditService) {
     this.jwtTokenService = jwtTokenService;
     this.authenticationManager = authenticationManager;
-    this.mapper = mapper;
     this.userJpaRepository = userJpaRepository;
     this.auditService = auditService;
   }
@@ -78,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     enrichResponse(response, authentication, user);
     user.setLastLoginDate(Instant.now());
     userJpaRepository.save(user);
-    return MappingUtil.copy(mapper, user).removeSensitiveData();
+    return user;
   }
 
   private void enrichResponse(

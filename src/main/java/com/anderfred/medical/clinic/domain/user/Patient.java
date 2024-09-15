@@ -11,11 +11,6 @@ public class Patient extends User {
   public static final String TYPE_DISCRIMINATOR = "patient";
 
   @Override
-  public String getObjectType() {
-    return TYPE_DISCRIMINATOR;
-  }
-
-  @Override
   public String toString() {
     return new ToStringBuilder(this).append("user", super.toString()).toString();
   }

@@ -2,6 +2,7 @@ package com.anderfred.medical.clinic.domain.user;
 
 import com.anderfred.medical.clinic.JsonConstants;
 import com.anderfred.medical.clinic.domain.base.AbstractAuditingEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
@@ -9,14 +10,12 @@ import jakarta.validation.constraints.NotEmpty;
 import java.time.Instant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.beans.factory.annotation.Configurable;
 
 @Entity
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "object_type")
 @Access(AccessType.FIELD)
-@Configurable
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = JsonConstants.PROPERTY_NAME)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = Doctor.class, name = Doctor.TYPE_DISCRIMINATOR),
@@ -42,6 +41,7 @@ public abstract class User extends AbstractAuditingEntity {
   private String email;
 
   @Column(name = "password", nullable = false)
+  @JsonIgnore
   private String password;
 
   @Column(name = "last_login_date", nullable = false)
@@ -50,8 +50,6 @@ public abstract class User extends AbstractAuditingEntity {
   @Column(name = "state", nullable = false)
   @Enumerated(EnumType.STRING)
   private UserState state = UserState.ACTIVE;
-
-  public abstract String getObjectType();
 
   public User setId(Long id) {
     this.id = id;
@@ -142,7 +140,4 @@ public abstract class User extends AbstractAuditingEntity {
         .toString();
   }
 
-  public User removeSensitiveData() {
-    return setPassword(null);
-  }
 }

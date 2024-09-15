@@ -53,7 +53,7 @@ public class DoctorServiceImpl implements DoctorService {
     Doctor persisted = repository.save(doctor);
     log.debug("Doctor:[{}], registered", persisted);
     auditService.createAuditRecord(EntityType.DOCTOR, ActionType.CREATE, persisted.getId());
-    return (Doctor) MappingUtil.copy(mapper, persisted).removeSensitiveData();
+    return persisted;
   }
 
   @Override
@@ -78,7 +78,7 @@ public class DoctorServiceImpl implements DoctorService {
     Doctor updated = repository.save(persisted);
     log.debug("Doctor:[{}], updated", updated);
     auditService.createAuditRecord(EntityType.DOCTOR, ActionType.UPDATE, persisted.getId());
-    return (Doctor) MappingUtil.copy(mapper, updated).removeSensitiveData();
+    return updated;
   }
 
   @Override
@@ -123,6 +123,6 @@ public class DoctorServiceImpl implements DoctorService {
             .orElseThrow(
                 () -> new BaseException("Doctor not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
     log.debug("Found patient:[{}]", doctor);
-    return (Doctor) MappingUtil.copy(mapper, doctor).removeSensitiveData();
+    return doctor;
   }
 }

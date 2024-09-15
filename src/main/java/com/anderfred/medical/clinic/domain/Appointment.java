@@ -185,6 +185,9 @@ public class Appointment extends AbstractAuditingEntity {
     setDoctor(doctor);
     setPatient((Patient) new Patient().setId(patientId));
     setLastModifiedDoctor(doctor);
+    CollectionUtils.emptyIfNull(getMedicalExams()).stream()
+        .filter(e -> isNull(e.getAppointment()))
+        .forEach(e -> e.setAppointment(this));
     validate(clinic);
   }
 

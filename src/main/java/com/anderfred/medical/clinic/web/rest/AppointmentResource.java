@@ -2,6 +2,8 @@ package com.anderfred.medical.clinic.web.rest;
 
 import com.anderfred.medical.clinic.domain.Appointment;
 import com.anderfred.medical.clinic.service.AppointmentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -16,9 +18,11 @@ public class AppointmentResource {
   private static final Logger log = LoggerFactory.getLogger(AppointmentResource.class);
 
   private final AppointmentService appointmentService;
+  private final ObjectMapper objectMapper;
 
-  public AppointmentResource(AppointmentService appointmentService) {
+  public AppointmentResource(AppointmentService appointmentService, ObjectMapper objectMapper) {
     this.appointmentService = appointmentService;
+    this.objectMapper = objectMapper;
   }
 
   @GetMapping("{id}")
@@ -30,7 +34,7 @@ public class AppointmentResource {
     return ResponseEntity.ok(appointment);
   }
 
-  @PostMapping("/")
+  @PostMapping
   @Secured("DOCTOR_ROLE")
   public ResponseEntity<Appointment> createAppointment(
       @RequestBody Appointment appointment,
@@ -41,12 +45,14 @@ public class AppointmentResource {
     return ResponseEntity.ok(created);
   }
 
-  @PutMapping("/")
+  @PutMapping
   @Secured("DOCTOR_ROLE")
-  public ResponseEntity<Appointment> updateAppointment(@RequestBody Appointment appointment) {
+  public ResponseEntity<Appointment> updateAppointment(@RequestBody Appointment appointment) throws JsonProcessingException {
     log.debug("REST request to update Appointment :[{}]", appointment);
     Appointment update = appointmentService.update(appointment);
     log.debug("Updated Appointment [{}]", update);
+    String s = objectMapper.writeValueAsString(update);
+    log.debug("Value:[{}]", s);
     return ResponseEntity.ok(update);
   }
 

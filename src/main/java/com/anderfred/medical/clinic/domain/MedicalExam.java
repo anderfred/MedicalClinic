@@ -17,7 +17,7 @@ public class MedicalExam extends AbstractAuditingEntity {
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "appointment_id", nullable = false)
+  @JoinColumn(name = "appointment_id")
   private Appointment appointment;
 
   @ManyToOne(fetch = FetchType.LAZY)

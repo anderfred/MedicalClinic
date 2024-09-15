@@ -12,9 +12,12 @@ import com.anderfred.medical.clinic.service.AppointmentService;
 import com.anderfred.medical.clinic.service.ClinicService;
 import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashSet;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -66,7 +69,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             .orElseThrow(
                 () -> new BaseException("Entity not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
     persisted.update(appointment, extractCurrentDoctorId(), clinicService.getDefaultClinic());
-    Appointment updated = repository.save(persisted);
+    repository.save(persisted);
+    Appointment updated = repository.findFullById(appointment.getId()).orElseThrow();
     log.debug("Appointment updated:[{}]", updated);
     auditService.createAuditRecord(EntityType.APPOINTMENT, ActionType.UPDATE, updated.getId());
     return updated;
@@ -104,9 +108,14 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Transactional(readOnly = true)
   public Page<Appointment> findActiveAppointments(Pageable pageable) {
     log.debug("Request to get active appointments :[{}]", pageable);
-    Page<Appointment> found = repository.findActivePage(pageable);
-    log.debug("Appointments found:[{}]", found.getTotalElements());
-    return found;
+    Page<Long> found = repository.findActivePageIds(pageable);
+    if (found.getTotalElements() > 0) {
+      List<Appointment> result = repository.findFullByIds(new HashSet<>(found.getContent()));
+      log.debug("Appointments found:[{}]", found.getTotalElements());
+      return new PageImpl<>(result, found.getPageable(), found.getTotalElements());
+    } else {
+      return new PageImpl<>(List.of());
+    }
   }
 
   private Long extractCurrentDoctorId() {

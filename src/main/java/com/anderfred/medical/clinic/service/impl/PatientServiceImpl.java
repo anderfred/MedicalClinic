@@ -27,19 +27,16 @@ public class PatientServiceImpl implements PatientService {
 
   private final PatientJpaRepository repository;
   private final PasswordEncoder passwordEncoder;
-  private final ObjectMapper mapper;
   private final AppointmentJpaRepository appointmentJpaRepository;
   private final AuditService auditService;
 
   public PatientServiceImpl(
       PatientJpaRepository repository,
       PasswordEncoder passwordEncoder,
-      ObjectMapper mapper,
       AppointmentJpaRepository appointmentJpaRepository,
       AuditService auditService) {
     this.repository = repository;
     this.passwordEncoder = passwordEncoder;
-    this.mapper = mapper;
     this.appointmentJpaRepository = appointmentJpaRepository;
     this.auditService = auditService;
   }
@@ -60,7 +57,7 @@ public class PatientServiceImpl implements PatientService {
     Patient persisted = repository.save(patient);
     log.debug("Patient:[{}], registered", persisted);
     auditService.createAuditRecord(EntityType.PATIENT, ActionType.CREATE, persisted.getId());
-    return (Patient) MappingUtil.copy(mapper, patient).removeSensitiveData();
+    return persisted;
   }
 
   @Override
@@ -85,7 +82,7 @@ public class PatientServiceImpl implements PatientService {
     Patient updated = repository.save(persisted);
     log.debug("Patient:[{}], updated", updated);
     auditService.createAuditRecord(EntityType.PATIENT, ActionType.UPDATE, persisted.getId());
-    return (Patient) MappingUtil.copy(mapper, updated).removeSensitiveData();
+    return updated;
   }
 
   @Override
@@ -136,6 +133,6 @@ public class PatientServiceImpl implements PatientService {
             .orElseThrow(
                 () -> new BaseException("Patient not found", ClinicExceptionCode.ENTITY_NOT_FOUND));
     log.debug("Found patient:[{}]", patient);
-    return (Patient) MappingUtil.copy(mapper, patient).removeSensitiveData();
+    return patient;
   }
 }

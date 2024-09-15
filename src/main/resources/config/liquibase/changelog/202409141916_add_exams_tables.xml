@@ -49,5 +49,10 @@
         <addForeignKeyConstraint baseTableName="medical_exam" baseColumnNames="exam_type"
                                  constraintName="fk_medical_exam_exam_type_to_exam_type"
                                  referencedTableName="exam_type" referencedColumnNames="id"/>
+
+        <sql>
+            INSERT INTO exam_type (name) VALUES("Blood Sugar");
+            INSERT INTO exam_type (name) VALUES("Some test 1");
+        </sql>
     </changeSet>
 </databaseChangeLog>
