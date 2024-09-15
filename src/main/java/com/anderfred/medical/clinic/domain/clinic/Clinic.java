@@ -34,6 +34,9 @@ public class Clinic extends AbstractAuditingEntity {
   @Column(name = "phone")
   private String phone;
 
+  @Column(name = "email")
+  private String email;
+
   @Column(name = "logo")
   private String logo;
 
@@ -97,6 +100,15 @@ public class Clinic extends AbstractAuditingEntity {
     return this;
   }
 
+  public String getEmail() {
+    return email;
+  }
+
+  public Clinic setEmail(String email) {
+    this.email = email;
+    return this;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -104,6 +116,7 @@ public class Clinic extends AbstractAuditingEntity {
         .append("name", getName())
         .append("address", getAddress())
         .append("phone", getPhone())
+        .append("email", getEmail())
         .append("logo", getLogo())
         .append("schedule", getSchedule())
         .toString();

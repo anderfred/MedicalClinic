@@ -1,34 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
-                                  http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-              name="SimpleReport"
-              pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
-              topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SimpleReport" pageWidth="595" pageHeight="1842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0e341edf-abfe-44d9-b381-669955cde40a">
+	<parameter name="clinic" class="com.anderfred.medical.clinic.domain.clinic.Clinic"/>
+	<parameter name="patient" class="com.anderfred.medical.clinic.domain.user.Patient"/>
+	<parameter name="examsDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 
-    <title>
-        <band height="50">
-            <textField>
-                <reportElement x="0" y="0" width="555" height="30"/>
-                <textElement textAlignment="Center">
-                    <font size="18" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Simple Report"]]></textFieldExpression>
-            </textField>
-        </band>
-    </title>
-
-    <detail>
-        <band height="50">
-            <textField>
-                <reportElement x="0" y="0" width="555" height="30"/>
-                <textElement textAlignment="Center">
-                    <font size="14"/>
-                </textElement>
-                <textFieldExpression><![CDATA["This is a test report"]]></textFieldExpression>
-            </textField>
-        </band>
-    </detail>
-
+	<field name="examType" class="com.anderfred.medical.clinic.domain.ExamType"/>
+	<field name="date" class="java.time.LocalDateTime"/>
+	<field name="result" class="com.anderfred.medical.clinic.domain.MedicalExamResult"/>
+	<field name="appointment" class="com.anderfred.medical.clinic.domain.Appointment"/>
+	<title>
+		<band height="200">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image>
+				<reportElement x="20" y="0" width="90" height="90" uuid="9b55a3e6-3099-4e36-9c0e-59fc6a44462b"/>
+				<imageExpression><![CDATA[
+        new java.io.ByteArrayInputStream(
+            java.util.Base64.getDecoder().decode($P{clinic}.getLogo())
+        )
+    ]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="140" y="0" width="415" height="30" uuid="4f4b3666-714f-42e3-bca8-44819fe3a8c1"/>
+				<textElement textAlignment="Left">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{clinic}.getName()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="30" width="415" height="30" uuid="0b037f79-46d5-4ba2-ba59-8d241ef7d881"/>
+				<textElement textAlignment="Left">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Phone: " + $P{clinic}.getPhone()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="60" width="415" height="30" uuid="e90ad3fd-2cae-4393-b40f-3c932dfe1d46"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Email: " + $P{clinic}.getEmail()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="130" width="415" height="40" uuid="88e0751c-c08f-4532-be64-7474b76ea6cd"/>
+				<textElement>
+					<font size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Patient: " + $P{patient}.getFirstName() + " " + $P{patient}.getLastName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="80" y="170" width="140" height="30" uuid="5a7c52c3-426e-4e65-a453-7a18143fdda9"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Your Test Results:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<text><![CDATA[Collection date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="200" height="20"/>
+				<text><![CDATA[Test name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="200" height="20"/>
+				<text><![CDATA[Test result]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="200" height="20"/>
+				<text><![CDATA[Result Date]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textFieldExpression><![CDATA[com.anderfred.medical.clinic.util.ReportDateFormatter.format($F{date})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="200" height="20"/>
+				<textFieldExpression><![CDATA[$F{examType}.getName()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="200" height="20"/>
+				<textFieldExpression><![CDATA[$F{result}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="200" height="20"/>
+				<textFieldExpression><![CDATA[com.anderfred.medical.clinic.util.ReportDateFormatter.format($F{appointment}.getResultReadyDate())]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
 </jasperReport>

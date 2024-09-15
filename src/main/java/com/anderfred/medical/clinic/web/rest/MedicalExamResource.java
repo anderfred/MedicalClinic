@@ -29,8 +29,6 @@ public class MedicalExamResource {
     this.medicalExamService = medicalExamService;
   }
 
-  // TODO pdf generation by jasper soft
-
   @GetMapping("/exams-list-pdf")
   @Secured("PATIENT_ROLE")
   public ResponseEntity<byte[]> generatePDF(@RequestParam("patientId") Long patientId) {

@@ -18,8 +18,6 @@ import com.anderfred.medical.clinic.service.test.UserServiceHelper;
 import com.anderfred.medical.clinic.util.AssertJUtil;
 import com.anderfred.medical.clinic.util.MappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -311,15 +309,22 @@ public class AppointmentServiceIT extends BaseIT {
     mockSecurityContext(doctor.getId(), doctor.getEmail(), UserRole.DOCTOR);
     LocalDateTime date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     Appointment appointment = new Appointment().setResultReadyDate(date);
-    ExamType examType = generateExamType();
+    ExamType examType = generateExamType("Blood sugar level");
+    ExamType examType2 = generateExamType("Some test");
     LocalDateTime examDate = LocalDateTime.of(2024, 10, 12, 15, 12);
     MedicalExam exam1 =
-            new MedicalExam()
-                    .setDate(examDate)
-                    .setExamType(examType)
-                    .setAppointment(appointment)
-                    .setResult(MedicalExamResult.POSITIVE);
-    appointment.setMedicalExams(List.of(exam1));
+        new MedicalExam()
+            .setDate(examDate)
+            .setExamType(examType)
+            .setAppointment(appointment)
+            .setResult(MedicalExamResult.POSITIVE);
+
+    MedicalExam exam2 =
+        new MedicalExam()
+            .setExamType(examType2)
+            .setAppointment(appointment)
+            .setResult(MedicalExamResult.NEGATIVE);
+    appointment.setMedicalExams(List.of(exam1, exam2));
     Appointment saved = appointmentService.addAppointment(appointment, patient.getId());
     Appointment persisted = appointmentJpaRepository.findFullById(saved.getId()).orElseThrow();
     assertThat(persisted.getDoctor().getId()).isEqualTo(doctor.getId());
@@ -332,7 +337,11 @@ public class AppointmentServiceIT extends BaseIT {
   }
 
   private ExamType generateExamType() {
-    ExamType examType = new ExamType().setName(randomAlphanumeric(10));
+    return generateExamType(randomAlphanumeric(10));
+  }
+
+  private ExamType generateExamType(String name) {
+    ExamType examType = new ExamType().setName(name);
     return examTypeService.create(examType);
   }
 

@@ -10,7 +10,7 @@ public interface MedicalExamJpaRepository extends JpaRepository<MedicalExam, Lon
   @Query(
       value =
           "select exam from MedicalExam exam "
-              + "join Appointment app on exam.appointment.id = app.id "
+              + "join fetch exam.appointment app join fetch exam.examType "
               + "where app.patient.id =:patientId "
               + "order by exam.date asc")
   List<MedicalExam> findAllByPatient(@Param("patientId") Long patientId);
